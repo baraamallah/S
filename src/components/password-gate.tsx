@@ -7,7 +7,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -130,9 +129,6 @@ export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
             <Skeleton className="h-12 w-full" />
           </div>
         </CardContent>
-         <CardFooter>
-          <Skeleton className="h-4 w-1/4 mx-auto" />
-        </CardFooter>
       </Card>
     );
   }
@@ -175,9 +171,6 @@ export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
           </Button>
         </form>
       </CardContent>
-      <CardFooter>
-        <p className="text-xs text-muted-foreground text-center w-full">Psst... the password is '{config.password}'.</p>
-      </CardFooter>
     </Card>
   );
 }
