@@ -102,9 +102,9 @@ export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
           <Skeleton className="h-9 w-3/4 mx-auto" />
           <Skeleton className="h-5 w-1/2 mx-auto mt-2" />
         </CardHeader>
-        <CardContent>
-           <div className="space-y-4">
-            <Skeleton className="h-6 w-1/3 mx-auto" />
+        <CardContent className="space-y-6 pt-6">
+          <div className="space-y-4">
+            <Skeleton className="h-5 w-1/2 mx-auto" />
             <div className="flex justify-around p-4 rounded-lg bg-background">
               <div className="flex flex-col items-center space-y-2">
                 <Skeleton className="h-14 w-16" />
@@ -124,6 +124,11 @@ export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
               </div>
             </div>
           </div>
+          <div className="space-y-4 border-t pt-6">
+            <Skeleton className="h-5 w-3/4 mx-auto" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+          </div>
         </CardContent>
          <CardFooter>
           <Skeleton className="h-4 w-1/4 mx-auto" />
@@ -142,30 +147,33 @@ export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
           A special surprise is waiting...
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        {isTimeUp ? (
-          <form onSubmit={handlePasswordSubmit} className="space-y-4">
-            <p className="text-center font-body text-muted-foreground">The time has come! Enter the magic word to unlock the surprise.</p>
-            <Input
-              type="password"
-              placeholder="Magic word"
-              value={passwordInput}
-              onChange={(e) => setPasswordInput(e.target.value)}
-              className="text-center text-lg h-12"
-              aria-label="Password for birthday surprise"
-            />
-            <Button type="submit" className="w-full h-12 font-headline text-lg" variant="default">
-              Unlock Surprise
-            </Button>
-          </form>
-        ) : (
-          <div className="space-y-4">
-            <p className="text-center font-body text-muted-foreground">The magic awakens in:</p>
+      <CardContent className="space-y-6 pt-6">
+        {!isTimeUp && (
+          <div className="space-y-4 text-center animate-in fade-in-50 duration-500">
+            <p className="font-body text-muted-foreground">The magic awakens in:</p>
             <div className="flex justify-around p-4 rounded-lg bg-background">
               {timerComponents.some(c => c !== null) ? timerComponents : <p>Loading countdown...</p>}
             </div>
           </div>
         )}
+        <form onSubmit={handlePasswordSubmit} className="space-y-4 border-t pt-6">
+          <p className="text-center font-body text-muted-foreground">
+            {isTimeUp
+              ? "The time has come! Enter the magic word to unlock the surprise."
+              : "Can't wait? Enter the magic word to get a sneak peek!"}
+          </p>
+          <Input
+            type="password"
+            placeholder="Magic word"
+            value={passwordInput}
+            onChange={(e) => setPasswordInput(e.target.value)}
+            className="text-center text-lg h-12"
+            aria-label="Password for birthday surprise"
+          />
+          <Button type="submit" className="w-full h-12 font-headline text-lg" variant="default">
+            {isTimeUp ? "Unlock Surprise" : "Sneak a Peek"}
+          </Button>
+        </form>
       </CardContent>
       <CardFooter>
         <p className="text-xs text-muted-foreground text-center w-full">Psst... the password is '{config.password}'.</p>
