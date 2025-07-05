@@ -1,5 +1,8 @@
 "use client";
 
+import { useState, useEffect, useRef } from "react";
+import { Play, LoaderCircle, Pause } from "lucide-react";
+
 import Balloons from "./balloons";
 import CuteCat from "./cute-cat";
 import Sparkles from "./sparkles";
@@ -7,9 +10,56 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useBirthdayConfig } from "@/hooks/use-birthday-config";
 import { Skeleton } from "./ui/skeleton";
 import BirthdayCake from "./birthday-cake";
+import { Button } from "./ui/button";
+import { generateAudio } from "@/ai/flows/generate-audio-flow";
 
 export default function BirthdayGreeting() {
   const { config, isLoaded } = useBirthdayConfig();
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [isGeneratingAudio, setIsGeneratingAudio] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    if (isLoaded && config.poem) {
+      const plainTextPoem = config.poem.replace(/<br \/>/g, " ");
+      generateAudio({ text: plainTextPoem })
+        .then(result => {
+          setAudioUrl(result.audioUrl);
+        })
+        .catch(err => {
+          console.error("Failed to generate audio:", err);
+          // You could show a toast here if you wanted
+        })
+        .finally(() => {
+          setIsGeneratingAudio(false);
+        });
+    }
+  }, [isLoaded, config.poem]);
+  
+  useEffect(() => {
+    const audioElement = audioRef.current;
+    if (audioElement) {
+      const onEnded = () => setIsPlaying(false);
+      audioElement.addEventListener('ended', onEnded);
+      return () => {
+        audioElement.removeEventListener('ended', onEnded);
+      };
+    }
+  }, [audioRef]);
+
+
+  const handlePlayPause = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        audioRef.current.play();
+        setIsPlaying(true);
+      }
+    }
+  };
 
   if (!isLoaded) {
     return (
@@ -44,7 +94,6 @@ export default function BirthdayGreeting() {
       className="relative w-full min-h-screen overflow-hidden flex items-center justify-center p-4 animate-in fade-in duration-1000"
       style={backgroundStyle}
     >
-      {/* Add a semi-transparent overlay to ensure text is readable on any background */}
       {config.backgroundImage && <div className="absolute inset-0 bg-black/20" />}
       <Balloons />
       <Sparkles />
@@ -58,6 +107,29 @@ export default function BirthdayGreeting() {
             className="font-body text-lg md:text-xl mt-8 text-foreground/80"
             dangerouslySetInnerHTML={{ __html: config.poem }}
           />
+
+          {audioUrl && (
+              <audio ref={audioRef} src={audioUrl} preload="auto" />
+          )}
+
+          <div className="mt-8 flex justify-center">
+            <Button 
+                onClick={handlePlayPause}
+                disabled={isGeneratingAudio}
+                size="lg"
+                className="rounded-full w-20 h-20"
+                aria-label={isPlaying ? "Pause message" : "Play message"}
+            >
+              {isGeneratingAudio ? (
+                <LoaderCircle className="animate-spin" />
+              ) : isPlaying ? (
+                <Pause className="w-8 h-8"/>
+              ) : (
+                <Play className="w-8 h-8 ml-1"/>
+              )}
+            </Button>
+          </div>
+
         </CardContent>
       </Card>
       
