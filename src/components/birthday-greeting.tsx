@@ -30,9 +30,22 @@ export default function BirthdayGreeting() {
         </div>
     );
   }
+  
+  const backgroundStyle = config.backgroundImage
+    ? {
+        backgroundImage: `url("${config.backgroundImage}")`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }
+    : {};
 
   return (
-    <div className="relative w-full min-h-screen overflow-hidden flex items-center justify-center p-4 animate-in fade-in duration-1000">
+    <div
+      className="relative w-full min-h-screen overflow-hidden flex items-center justify-center p-4 animate-in fade-in duration-1000"
+      style={backgroundStyle}
+    >
+      {/* Add a semi-transparent overlay to ensure text is readable on any background */}
+      {config.backgroundImage && <div className="absolute inset-0 bg-black/20" />}
       <Balloons />
       <Sparkles />
 

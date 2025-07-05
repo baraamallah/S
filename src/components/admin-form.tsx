@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Sparkles } from "lucide-react";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +31,8 @@ import { useBirthdayConfig } from "@/hooks/use-birthday-config";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { generateInvitationText } from "@/ai/flows/generate-invitation-text";
+import { generateImage } from "@/ai/flows/generate-image-flow";
+
 
 const formSchema = z.object({
   date: z.date({
@@ -38,6 +41,7 @@ const formSchema = z.object({
   password: z.string().min(1, "Password cannot be empty."),
   title: z.string().min(1, "Title cannot be empty."),
   poem: z.string().min(1, "Poem cannot be empty."),
+  backgroundImage: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -46,6 +50,8 @@ export default function AdminForm() {
   const { config, saveConfig, isLoaded } = useBirthdayConfig();
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [imagePrompt, setImagePrompt] = useState("A magical, dreamy landscape with pastel colors");
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -53,6 +59,7 @@ export default function AdminForm() {
         password: '',
         title: '',
         poem: '',
+        backgroundImage: '',
     },
   });
 
@@ -63,6 +70,7 @@ export default function AdminForm() {
         password: config.password,
         title: config.title,
         poem: config.poem.replace(/<br \/>/g, "\n"),
+        backgroundImage: config.backgroundImage,
       });
     }
   }, [isLoaded, config, form]);
@@ -95,12 +103,36 @@ export default function AdminForm() {
     }
   };
 
+  const handleGenerateImage = async () => {
+    setIsGeneratingImage(true);
+    try {
+      const result = await generateImage({ prompt: imagePrompt });
+      if (result && result.imageUrl) {
+        form.setValue("backgroundImage", result.imageUrl, { shouldValidate: true });
+        toast({
+          title: "Background Generated!",
+          description: "A new background image has been created.",
+        });
+      }
+    } catch (error) {
+      console.error("Failed to generate image:", error);
+      toast({
+        title: "Generation Failed",
+        description: "Could not generate the image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
+
   function onSubmit(values: FormValues) {
     const newConfig = {
+      ...values,
       date: values.date.toISOString(),
-      password: values.password,
-      title: values.title,
       poem: values.poem.replace(/\n/g, "<br />"),
+      backgroundImage: values.backgroundImage || "",
     };
     saveConfig(newConfig);
     toast({
@@ -230,6 +262,67 @@ export default function AdminForm() {
                     </FormItem>
                   )}
                 />
+            </div>
+
+            <div className="space-y-4 rounded-lg border bg-card p-4">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <h3 className="text-lg font-medium">Background Image</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Generate a magical background with AI.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGenerateImage}
+                  disabled={isGeneratingImage}
+                  className="gap-2"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  {isGeneratingImage ? "Generating..." : "Generate Background"}
+                </Button>
+              </div>
+
+              <FormItem>
+                <FormLabel>AI Image Prompt</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="e.g., A dreamy pastel sky with floating islands"
+                    value={imagePrompt}
+                    onChange={(e) => setImagePrompt(e.target.value)}
+                  />
+                </FormControl>
+              </FormItem>
+
+              <FormField
+                control={form.control}
+                name="backgroundImage"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Image Preview</FormLabel>
+                    <FormControl>
+                      <div className="aspect-video w-full rounded-lg border bg-muted flex items-center justify-center">
+                        {field.value ? (
+                          <Image
+                            src={field.value}
+                            alt="Generated background"
+                            width={1280}
+                            height={720}
+                            className="object-cover rounded-lg w-full h-full"
+                          />
+                        ) : (
+                          <p className="text-sm text-muted-foreground">
+                            No image generated yet.
+                          </p>
+                        )}
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
             
             <Button type="submit">Save Settings</Button>

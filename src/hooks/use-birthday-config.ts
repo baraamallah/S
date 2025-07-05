@@ -7,6 +7,7 @@ export interface BirthdayConfig {
   password: string;
   title: string;
   poem: string;
+  backgroundImage: string;
 }
 
 const STORAGE_KEY = 'sondosBirthdayConfig';
@@ -16,6 +17,7 @@ const defaultConfig: BirthdayConfig = {
   password: "Best Friend",
   title: "Happy Birthday, Sondos!",
   poem: `A year of moments, bright and new,<br />With skies of turquoise, just for you.<br />Like pinkest roses, may you bloom,<br />And chase away all winter gloom.<br />May every day in sweet gold shine,<br />A very happy birthday, be forever thine!`,
+  backgroundImage: "",
 };
 
 export function useBirthdayConfig() {
@@ -27,7 +29,9 @@ export function useBirthdayConfig() {
       const storedConfig = localStorage.getItem(STORAGE_KEY);
       if (storedConfig) {
         const parsedConfig = JSON.parse(storedConfig);
-        setConfig({ ...defaultConfig, ...parsedConfig });
+        // Ensure all keys from defaultConfig are present
+        const mergedConfig = { ...defaultConfig, ...parsedConfig };
+        setConfig(mergedConfig);
       } else {
         setConfig(defaultConfig);
       }
