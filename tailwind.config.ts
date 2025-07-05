@@ -10,8 +10,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Inter', 'sans-serif'],
-        headline: ['Inter', 'sans-serif'],
+        body: ['Alegreya', 'serif'],
+        headline: ['Belleza', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
@@ -88,10 +88,25 @@ export default {
             height: '0',
           },
         },
+        'float': {
+          '0%': { transform: 'translateY(0vh) rotate(-10deg)', opacity: '1' },
+          '100%': { transform: 'translateY(-120vh) rotate(10deg)', opacity: '0' },
+        },
+        'twinkle': {
+            '0%, 100%': { opacity: '0.5', transform: 'scale(0.8)' },
+            '50%': { opacity: '1', transform: 'scale(1.2)' },
+        },
+        'tail-wag': {
+            '0%, 100%': { transform: 'rotate(5deg)', transformOrigin: 'bottom left' },
+            '50%': { transform: 'rotate(-15deg)', transformOrigin: 'bottom left' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'float': 'float linear forwards',
+        'twinkle': 'twinkle 2.5s ease-in-out infinite',
+        'tail-wag': 'tail-wag 2s ease-in-out infinite',
       },
     },
   },
