@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import AdminForm from "@/components/admin-form";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
 // A simple, hardcoded password to protect the admin page.
 // In a real app, this should be a proper authentication system.
-const ADMIN_PASSWORD = "supersecretadmin";
+const ADMIN_PASSWORD = "admin123";
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -53,6 +53,9 @@ export default function AdminPage() {
               </Button>
             </form>
           </CardContent>
+          <CardFooter>
+            <p className="text-xs text-muted-foreground text-center w-full">Psst... the password is 'admin123'.</p>
+          </CardFooter>
         </Card>
       )}
     </main>
