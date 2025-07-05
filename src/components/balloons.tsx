@@ -54,7 +54,7 @@ export default function Balloons() {
 
   useEffect(() => {
     // Generate unique IDs for balloons
-    setBalloonIds(Array.from({ length: 15 }, (_, i) => i));
+    setBalloonIds(Array.from({ length: 30 }, (_, i) => i));
   }, []);
 
 

@@ -6,6 +6,7 @@ import Sparkles from "./sparkles";
 import { Card, CardContent } from "@/components/ui/card";
 import { useBirthdayConfig } from "@/hooks/use-birthday-config";
 import { Skeleton } from "./ui/skeleton";
+import BirthdayCake from "./birthday-cake";
 
 export default function BirthdayGreeting() {
   const { config, isLoaded } = useBirthdayConfig();
@@ -47,6 +48,7 @@ export default function BirthdayGreeting() {
         </CardContent>
       </Card>
       
+      <BirthdayCake />
       <CuteCat />
     </div>
   );
