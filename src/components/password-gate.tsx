@@ -14,8 +14,8 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 // Admin-configurable settings (hardcoded for now)
-const BIRTHDAY_DATE_STRING = "2024-08-23T00:00:00";
-const PASSWORD = "sondos";
+const BIRTHDAY_DATE_STRING = "2025-08-17T00:00:00";
+const PASSWORD = "best friend";
 
 interface TimeLeft {
   days?: number;
@@ -134,7 +134,7 @@ export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
         )}
       </CardContent>
       <CardFooter>
-        <p className="text-xs text-muted-foreground text-center w-full">Psst... the password is 'sondos'.</p>
+        <p className="text-xs text-muted-foreground text-center w-full">Psst... the password is 'Best Friend'.</p>
       </CardFooter>
     </Card>
   );
