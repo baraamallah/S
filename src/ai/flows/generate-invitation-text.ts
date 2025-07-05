@@ -10,13 +10,13 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
-export const GenerateInvitationTextInputSchema = z.object({
+const GenerateInvitationTextInputSchema = z.object({
   name: z.string().describe('The name of the person the invitation is for.'),
   style_prompt: z.string().describe('A short prompt describing the desired style of the invitation text. e.g. "magical and elegant", "fun and quirky"'),
 });
 export type GenerateInvitationTextInput = z.infer<typeof GenerateInvitationTextInputSchema>;
 
-export const GenerateInvitationTextOutputSchema = z.object({
+const GenerateInvitationTextOutputSchema = z.object({
   title: z.string().describe('An elegant and catchy title for the birthday greeting.'),
   poem: z.string().describe('A short, heartfelt poem for the birthday card. It should have line breaks.'),
 });
