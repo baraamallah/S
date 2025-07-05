@@ -12,10 +12,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-
-// Admin-configurable settings (hardcoded for now)
-const BIRTHDAY_DATE_STRING = "2025-08-17T00:00:00";
-const PASSWORD = "best friend";
+import { useBirthdayConfig } from "@/hooks/use-birthday-config";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface TimeLeft {
   days?: number;
@@ -25,8 +23,9 @@ interface TimeLeft {
 }
 
 export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
-  const birthdayDate = useMemo(() => new Date(BIRTHDAY_DATE_STRING), []);
-  const [isClient, setIsClient] = useState(false);
+  const { config, isLoaded } = useBirthdayConfig();
+  
+  const birthdayDate = useMemo(() => new Date(config.date), [config.date]);
 
   const calculateTimeLeft = (): TimeLeft => {
     const difference = +birthdayDate - +new Date();
@@ -47,7 +46,8 @@ export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({});
 
   useEffect(() => {
-    setIsClient(true);
+    if (!isLoaded) return;
+    
     const checkDate = () => {
        if (+birthdayDate - +new Date() <= 0) {
         setIsTimeUp(true);
@@ -59,14 +59,14 @@ export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
     checkDate();
     const timer = setInterval(checkDate, 1000);
     return () => clearInterval(timer);
-  }, [birthdayDate]);
+  }, [birthdayDate, isLoaded]);
 
-  const [password, setPassword] = useState("");
+  const [passwordInput, setPasswordInput] = useState("");
   const { toast } = useToast();
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password.toLowerCase().trim() === PASSWORD) {
+    if (passwordInput.toLowerCase().trim() === config.password.toLowerCase().trim()) {
       onSuccess();
     } else {
       toast({
@@ -74,18 +74,19 @@ export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
         description: "That's not the magic word. Please try again!",
         variant: "destructive",
       });
-      setPassword("");
+      setPasswordInput("");
     }
   };
 
   const timerComponents = Object.keys(timeLeft).map((interval) => {
-    if (!timeLeft[interval as keyof TimeLeft]) {
+    const value = timeLeft[interval as keyof TimeLeft];
+    if (value === undefined || value < 0) {
       return null;
     }
     return (
       <div key={interval} className="flex flex-col items-center">
         <div className="font-headline text-5xl md:text-6xl text-accent">
-          {String(timeLeft[interval as keyof TimeLeft]).padStart(2, '0')}
+          {String(value).padStart(2, '0')}
         </div>
         <div className="font-body text-sm text-muted-foreground uppercase tracking-wider">
           {interval}
@@ -94,8 +95,41 @@ export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
     );
   });
   
-  if (!isClient) {
-    return null; // or a loading skeleton
+  if (!isLoaded) {
+    return (
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <Skeleton className="h-9 w-3/4 mx-auto" />
+          <Skeleton className="h-5 w-1/2 mx-auto mt-2" />
+        </CardHeader>
+        <CardContent>
+           <div className="space-y-4">
+            <Skeleton className="h-6 w-1/3 mx-auto" />
+            <div className="flex justify-around p-4 rounded-lg bg-background">
+              <div className="flex flex-col items-center space-y-2">
+                <Skeleton className="h-14 w-16" />
+                <Skeleton className="h-4 w-12" />
+              </div>
+               <div className="flex flex-col items-center space-y-2">
+                <Skeleton className="h-14 w-16" />
+                <Skeleton className="h-4 w-12" />
+              </div>
+               <div className="flex flex-col items-center space-y-2">
+                <Skeleton className="h-14 w-16" />
+                <Skeleton className="h-4 w-12" />
+              </div>
+               <div className="flex flex-col items-center space-y-2">
+                <Skeleton className="h-14 w-16" />
+                <Skeleton className="h-4 w-12" />
+              </div>
+            </div>
+          </div>
+        </CardContent>
+         <CardFooter>
+          <Skeleton className="h-4 w-1/4 mx-auto" />
+        </CardFooter>
+      </Card>
+    );
   }
 
   return (
@@ -115,8 +149,8 @@ export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
             <Input
               type="password"
               placeholder="Magic word"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
               className="text-center text-lg h-12"
               aria-label="Password for birthday surprise"
             />
@@ -128,13 +162,13 @@ export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
           <div className="space-y-4">
             <p className="text-center font-body text-muted-foreground">The magic awakens in:</p>
             <div className="flex justify-around p-4 rounded-lg bg-background">
-              {timerComponents.length ? timerComponents : <p>Loading countdown...</p>}
+              {timerComponents.some(c => c !== null) ? timerComponents : <p>Loading countdown...</p>}
             </div>
           </div>
         )}
       </CardContent>
       <CardFooter>
-        <p className="text-xs text-muted-foreground text-center w-full">Psst... the password is 'Best Friend'.</p>
+        <p className="text-xs text-muted-foreground text-center w-full">Psst... the password is '{config.password}'.</p>
       </CardFooter>
     </Card>
   );
