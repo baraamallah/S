@@ -1,6 +1,8 @@
-export default function CuteCat() {
+import { cn } from "@/lib/utils";
+
+export default function CuteCat({ className }: { className?: string }) {
   return (
-    <div className="absolute bottom-0 right-0 w-40 md:w-52 z-20 pointer-events-none translate-y-4 md:translate-y-6">
+    <div className={cn("pointer-events-none", className)}>
       <svg
         viewBox="0 0 200 200"
         xmlns="http://www.w3.org/2000/svg"
