@@ -40,26 +40,30 @@ export default function BirthdayGreeting() {
 
   return (
     <div
-      className="relative w-full min-h-screen overflow-hidden flex items-center justify-center p-4 animate-in fade-in duration-1000"
+      className="relative w-full min-h-screen overflow-hidden flex flex-col p-4 animate-in fade-in duration-1000"
       style={backgroundStyle}
     >
       {config.backgroundImage && <div className="absolute inset-0 bg-black/20 z-0" />}
       <Balloons />
       <Sparkles />
 
-      <Card className="relative z-10 w-full max-w-2xl text-center bg-card/80 backdrop-blur-sm shadow-2xl rounded-2xl animate-in fade-in zoom-in-95 duration-700">
-        <CardContent className="p-6 md:p-10">
-          <h1 className="font-headline text-4xl md:text-6xl text-primary-foreground/90 drop-shadow-[0_2px_2px_rgba(0,0,0,0.2)]">
-            {config.title}
-          </h1>
-          <p 
-            className="font-body text-base md:text-lg mt-6 text-foreground/80"
-            dangerouslySetInnerHTML={{ __html: config.poem }}
-          />
-        </CardContent>
-      </Card>
+      <main className="relative z-10 flex flex-col flex-grow justify-center items-center">
+        <Card className="w-full max-w-2xl text-center bg-card/80 backdrop-blur-sm shadow-2xl rounded-2xl animate-in fade-in zoom-in-95 duration-700">
+          <CardContent className="p-6 md:p-10">
+            <h1 className="font-headline text-4xl md:text-6xl text-primary-foreground/90 drop-shadow-[0_2px_2px_rgba(0,0,0,0.2)]">
+              {config.title}
+            </h1>
+            <p 
+              className="font-body text-base md:text-lg mt-6 text-foreground/80"
+              dangerouslySetInnerHTML={{ __html: config.poem }}
+            />
+          </CardContent>
+        </Card>
+      </main>
       
-      <BirthdayCake className="absolute bottom-8 left-1/2 -translate-x-1/2 w-48 md:w-64" />
+      <footer className="relative z-10 flex-shrink-0 flex justify-center pt-4 pb-4 md:pb-8">
+        <BirthdayCake className="w-48 md:w-64" />
+      </footer>
       
     </div>
   );
