@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Balloons from "./balloons";
 import Sparkles from "./sparkles";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,21 +7,9 @@ import { useBirthdayConfig } from "@/hooks/use-birthday-config";
 import { Skeleton } from "./ui/skeleton";
 import BirthdayCake from "./birthday-cake";
 import CuteCat from "./cute-cat";
-import Fireworks from "./fireworks";
-import { Button } from "./ui/button";
-import { PartyPopper } from "lucide-react";
 
 export default function BirthdayGreeting() {
   const { config, isLoaded } = useBirthdayConfig();
-  const [showFireworks, setShowFireworks] = useState(false);
-
-  const handleCelebrationClick = () => {
-    setShowFireworks(true);
-    setTimeout(() => {
-      setShowFireworks(false);
-    }, 5000);
-  };
-
 
   if (!isLoaded) {
     return (
@@ -60,7 +47,6 @@ export default function BirthdayGreeting() {
       {config.backgroundImage && <div className="absolute inset-0 bg-black/20 z-0" />}
       <Balloons />
       <Sparkles />
-      <Fireworks isActive={showFireworks} />
 
       <main className="relative z-10 flex flex-grow flex-col justify-center items-center">
         <Card className="w-full max-w-2xl text-center bg-card/80 backdrop-blur-sm shadow-2xl rounded-2xl animate-in fade-in zoom-in-95 duration-700">
@@ -72,10 +58,6 @@ export default function BirthdayGreeting() {
               className="font-body text-base md:text-lg mt-6 text-foreground/80"
               dangerouslySetInnerHTML={{ __html: config.poem }}
             />
-            <Button onClick={handleCelebrationClick} className="mt-8">
-              <PartyPopper className="mr-2 h-5 w-5" />
-              Celebrate!
-            </Button>
           </CardContent>
         </Card>
       </main>
