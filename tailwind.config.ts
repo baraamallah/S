@@ -10,8 +10,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Lato', 'sans-serif'],
-        headline: ['Playfair Display', 'serif'],
+        body: ['Raleway', 'sans-serif'],
+        headline: ['Dancing Script', 'cursive'],
         code: ['monospace'],
       },
       colors: {
