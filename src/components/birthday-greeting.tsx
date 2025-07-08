@@ -1,13 +1,11 @@
 "use client";
 
 import Balloons from "./balloons";
-import CuteCat from "./cute-cat";
 import Sparkles from "./sparkles";
 import { Card, CardContent } from "@/components/ui/card";
 import { useBirthdayConfig } from "@/hooks/use-birthday-config";
 import { Skeleton } from "./ui/skeleton";
 import BirthdayCake from "./birthday-cake";
-import Flowers from "./flowers";
 
 export default function BirthdayGreeting() {
   const { config, isLoaded } = useBirthdayConfig();
@@ -61,14 +59,8 @@ export default function BirthdayGreeting() {
         </CardContent>
       </Card>
       
-      <Flowers className="absolute bottom-0 left-[-15%] md:left-[-5%] w-full max-w-xs md:max-w-sm" />
-      <Flowers className="absolute bottom-0 right-[-15%] md:right-[-5%] w-full max-w-xs md:max-w-sm -scale-x-100" />
+      <BirthdayCake className="absolute bottom-8 left-1/2 -translate-x-1/2 w-48 md:w-64" />
       
-      <BirthdayCake className="absolute bottom-4 left-4 md:left-8 w-48 md:w-64" />
-      
-      <CuteCat className="absolute bottom-0 right-4 md:right-8 w-40 md:w-52" />
-      <CuteCat className="absolute bottom-0 left-[30%] w-32 md:w-40 -scale-x-100" />
-      <CuteCat className="absolute bottom-[20%] left-[calc(50%-8rem)] w-24 -rotate-12" />
     </div>
   );
 }
