@@ -137,16 +137,16 @@ export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
     <Card className="w-full max-w-md animate-in fade-in zoom-in-95 duration-500 shadow-xl rounded-2xl">
       <CardHeader className="text-center">
         <CardTitle className="font-headline text-3xl sm:text-4xl">
-          Sondos' Magical Birthday
+          {config.gateTitle}
         </CardTitle>
         <CardDescription className="font-body text-base">
-          A special surprise is waiting...
+          {config.gateSubtitle}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6 pt-6">
         {!isTimeUp && (
           <div className="space-y-4 text-center animate-in fade-in-50 duration-500">
-            <p className="font-body text-muted-foreground">The magic awakens in:</p>
+            <p className="font-body text-muted-foreground">{config.gateTimerText}</p>
             <div className="flex justify-around p-4 rounded-lg bg-background">
               {timerComponents.some(c => c !== null) ? timerComponents : <p>Loading countdown...</p>}
             </div>
@@ -155,8 +155,8 @@ export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
         <form onSubmit={handlePasswordSubmit} className="space-y-4 border-t pt-6">
           <p className="text-center font-body text-muted-foreground">
             {isTimeUp
-              ? "The time has come! Enter the magic word to unlock the surprise."
-              : "Can't wait? Enter the magic word to get a sneak peek!"}
+              ? config.gatePromptNow
+              : config.gatePromptLater}
           </p>
           <Input
             type="password"
@@ -167,7 +167,7 @@ export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
             aria-label="Password for birthday surprise"
           />
           <Button type="submit" className="w-full h-12 font-headline text-lg" variant="default">
-            {isTimeUp ? "Unlock Surprise" : "Sneak a Peek"}
+            {isTimeUp ? config.gateButtonNow : config.gateButtonLater}
           </Button>
         </form>
       </CardContent>

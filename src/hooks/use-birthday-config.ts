@@ -8,6 +8,17 @@ export interface BirthdayConfig {
   title: string;
   poem: string;
   backgroundImage: string;
+  entryTitle: string;
+  entrySubtitle: string;
+  entryButtonText: string;
+  gateTitle: string;
+  gateSubtitle: string;
+  gateTimerText: string;
+  gatePromptNow: string;
+  gatePromptLater: string;
+  gateButtonNow: string;
+  gateButtonLater: string;
+  cakeText: string;
 }
 
 const STORAGE_KEY = 'sondosBirthdayConfig';
@@ -16,8 +27,19 @@ const defaultConfig: BirthdayConfig = {
   date: "2025-08-17T00:00:00",
   password: "Best Friend",
   title: "Happy Birthday, Sondos!",
-  poem: `A year of moments, bright and new,<br />With skies of turquoise, just for you.<br />Like pinkest roses, may you bloom,<br />And chase away all winter gloom.<br />May every day in sweet gold shine,<br />A very happy birthday, be forever thine!`,
+  poem: `Of all the stars in the night sky,<br />yours is the one that shines most high.<br />Through every chapter, laugh, and tear,<br />you grow more wonderful each year.<br />May all your wishes, big and small,<br />come true today, have a ball!`,
   backgroundImage: "",
+  entryTitle: "A Surprise for Sondos",
+  entrySubtitle: "Click below to begin the magical celebration!",
+  entryButtonText: "Click to Enter",
+  gateTitle: "Sondos' Magical Birthday",
+  gateSubtitle: "A special surprise is waiting...",
+  gateTimerText: "The magic awakens in:",
+  gatePromptNow: "The time has come! Enter the magic word to unlock the surprise.",
+  gatePromptLater: "Can't wait? Enter the magic word to get a sneak peek!",
+  gateButtonNow: "Unlock Surprise",
+  gateButtonLater: "Sneak a Peek",
+  cakeText: "Thank You!",
 };
 
 export function useBirthdayConfig() {
@@ -33,6 +55,8 @@ export function useBirthdayConfig() {
         const mergedConfig = { ...defaultConfig, ...parsedConfig };
         setConfig(mergedConfig);
       } else {
+        // First time load, set default config in storage
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultConfig));
         setConfig(defaultConfig);
       }
     } catch (error) {

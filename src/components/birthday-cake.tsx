@@ -1,6 +1,11 @@
+"use client";
+
 import { cn } from "@/lib/utils";
+import { useBirthdayConfig } from "@/hooks/use-birthday-config";
 
 export default function BirthdayCake({ className }: { className?: string }) {
+  const { config, isLoaded } = useBirthdayConfig();
+
   return (
     <div className={cn("w-48 md:w-64 pointer-events-none", className)}>
       <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-lg">
@@ -26,10 +31,12 @@ export default function BirthdayCake({ className }: { className?: string }) {
            <path d="M 40 70 C 60 60, 140 60, 160 70" stroke="hsl(var(--primary-foreground) / 0.5)" strokeWidth="2" fill="none" />
            <path d="M 40 70 C 50 85, 60 85, 70 70 C 80 85, 90 85, 100 70 C 110 85, 120 85, 130 70 L 140 70 Z" fill="hsl(var(--card))" />
           
-           {/* "Thank You!" Text */}
-           <text x="100" y="150" fontFamily="Playfair Display, serif" fontSize="18" fill="hsl(var(--accent-foreground))" textAnchor="middle" fontWeight="700">
-            Thank you
-          </text>
+           {/* Dynamic Cake Text */}
+           {isLoaded && (
+            <text x="100" y="150" fontFamily="Playfair Display, serif" fontSize="18" fill="hsl(var(--accent-foreground))" textAnchor="middle" fontWeight="700">
+              {config.cakeText}
+            </text>
+           )}
           
           {/* Candles */}
           <g>
