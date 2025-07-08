@@ -100,6 +100,10 @@ export default {
             '0%, 100%': { transform: 'rotate(5deg)', transformOrigin: 'bottom left' },
             '50%': { transform: 'rotate(-15deg)', transformOrigin: 'bottom left' },
         },
+        'firework-burst': {
+          '0%': { transform: 'scale(0.2)', opacity: '1' },
+          '100%': { transform: 'scale(1.2)', opacity: '0' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -107,6 +111,7 @@ export default {
         'float': 'float linear forwards',
         'twinkle': 'twinkle 2.5s ease-in-out infinite',
         'tail-wag': 'tail-wag 2s ease-in-out infinite',
+        'firework-burst': 'firework-burst 0.7s ease-out forwards',
       },
     },
   },
