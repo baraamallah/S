@@ -12,6 +12,12 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
+// Add a guard clause to ensure Firebase credentials are loaded.
+// This prevents silent failures and provides a clear error message.
+if (!firebaseConfig.projectId) {
+    throw new Error("Firebase project ID is not defined in your environment variables. Please check your .env file and ensure it's loaded correctly.");
+}
+
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
