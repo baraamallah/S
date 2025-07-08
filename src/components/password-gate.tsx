@@ -136,7 +136,7 @@ export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
   return (
     <Card className="w-full max-w-md animate-in fade-in zoom-in-95 duration-500 shadow-xl rounded-2xl">
       <CardHeader className="text-center">
-        <CardTitle className="font-headline text-4xl">
+        <CardTitle className="font-headline text-3xl sm:text-4xl">
           Sondos' Magical Birthday
         </CardTitle>
         <CardDescription className="font-body text-base">

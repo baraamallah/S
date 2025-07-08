@@ -64,19 +64,21 @@ export default function BirthdayGreeting() {
       <BirthdayCake />
       
       {/* Original flowers */}
-      <Flowers />
-      
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-64 md:w-96 z-10 pointer-events-none translate-y-8">
+        <Flowers />
+      </div>
+
       {/* Added more flowers on the right */}
-      <div className="absolute bottom-0 right-0 w-80 md:w-96 z-10 pointer-events-none translate-y-8 -scale-x-100">
+      <div className="absolute bottom-0 right-0 w-60 md:w-96 z-10 pointer-events-none translate-y-8 -scale-x-100">
         <Flowers />
       </div>
 
       {/* Original cats */}
       <CuteCat className="absolute bottom-0 right-4 w-40 md:w-52 z-20 pointer-events-none translate-y-4 md:translate-y-6" />
-      <CuteCat className="absolute bottom-0 left-44 w-32 md:w-40 z-20 pointer-events-none translate-y-4 md:translate-y-6 -scale-x-100" />
+      <CuteCat className="absolute bottom-0 left-36 w-32 md:w-40 z-20 pointer-events-none translate-y-4 md:translate-y-6 -scale-x-100" />
       
       {/* Added another cat peeking from the cake */}
-      <div className="absolute bottom-16 left-32 w-24 z-20 pointer-events-none -rotate-12">
+      <div className="absolute bottom-20 left-28 w-24 sm:bottom-16 sm:left-32 z-20 pointer-events-none -rotate-12">
         <CuteCat />
       </div>
     </div>

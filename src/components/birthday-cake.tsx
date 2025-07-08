@@ -1,6 +1,6 @@
 export default function BirthdayCake() {
   return (
-    <div className="absolute bottom-0 left-4 w-52 md:w-64 z-20 pointer-events-none translate-y-12 md:translate-y-16">
+    <div className="absolute bottom-0 left-4 w-48 md:w-64 z-20 pointer-events-none translate-y-12 md:translate-y-16">
       <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-lg">
         <defs>
           <g id="flame">

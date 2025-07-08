@@ -12,7 +12,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 transition-opacity duration-1000">
+    <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8 transition-opacity duration-1000">
       {isAuthenticated ? (
         <BirthdayGreeting />
       ) : (
