@@ -48,7 +48,7 @@ const defaultConfig: BirthdayConfig = {
 
 interface BirthdayConfigContextType {
     config: BirthdayConfig;
-    saveConfig: (newConfig: BirthdayConfig) => void;
+    saveConfig: (newConfig: BirthdayConfig) => Promise<void>;
     isLoaded: boolean;
 }
 
@@ -92,12 +92,13 @@ export function BirthdayConfigProvider({ children }: { children: ReactNode }) {
       setConfig(newConfig);
     } catch (error) {
       console.error("Failed to save config to Firebase", error);
+      throw error; // Re-throw the error to be caught by the caller
     }
   }, []);
 
   const value = { config, saveConfig, isLoaded };
 
-  return React.createElement(BirthdayConfigContext.Provider, { value }, children);
+  return React.createElement(BirthdayConfigContext.Provider, { value: value as any }, children);
 }
 
 export function useBirthdayConfig() {

@@ -102,7 +102,7 @@ export default function AdminForm() {
     }
   }, [isLoaded, config, form]);
 
-  function onSubmit(values: FormValues) {
+  async function onSubmit(values: FormValues) {
     const newDate = new Date(values.date);
     newDate.setHours(values.hour);
     newDate.setMinutes(values.minute);
@@ -114,11 +114,21 @@ export default function AdminForm() {
       poem: values.poem.replace(/\n/g, "<br />"),
       backgroundImage: values.backgroundImage || "",
     };
-    saveConfig(newConfig);
-    toast({
-      title: "Success!",
-      description: "Your settings have been saved.",
-    });
+    
+    try {
+      await saveConfig(newConfig);
+      toast({
+        title: "Success!",
+        description: "Your settings have been saved.",
+      });
+    } catch (error) {
+      console.error("Firebase save error:", error);
+      toast({
+        title: "Error Saving Settings",
+        description: "Could not save settings. Please check Firestore permissions and console for details.",
+        variant: "destructive",
+      });
+    }
   }
 
   if (!isLoaded) {
