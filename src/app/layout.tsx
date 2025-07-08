@@ -1,6 +1,7 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
+import { BirthdayConfigProvider } from '@/hooks/use-birthday-config';
 
 export const metadata: Metadata = {
   title: 'Sondos\' Magical Birthday',
@@ -20,7 +21,9 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&family=Belleza&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        {children}
+        <BirthdayConfigProvider>
+          {children}
+        </BirthdayConfigProvider>
         <Toaster />
       </body>
     </html>

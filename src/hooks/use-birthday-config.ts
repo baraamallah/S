@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, createContext, useContext, ReactNode } from 'react';
 
 export interface BirthdayConfig {
   date: string;
@@ -42,7 +42,16 @@ const defaultConfig: BirthdayConfig = {
   cakeText: "Thank You!",
 };
 
-export function useBirthdayConfig() {
+
+interface BirthdayConfigContextType {
+    config: BirthdayConfig;
+    saveConfig: (newConfig: BirthdayConfig) => void;
+    isLoaded: boolean;
+}
+
+const BirthdayConfigContext = createContext<BirthdayConfigContextType | undefined>(undefined);
+
+export function BirthdayConfigProvider({ children }: { children: ReactNode }) {
   const [config, setConfig] = useState<BirthdayConfig>(defaultConfig);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -51,11 +60,9 @@ export function useBirthdayConfig() {
       const storedConfig = localStorage.getItem(STORAGE_KEY);
       if (storedConfig) {
         const parsedConfig = JSON.parse(storedConfig);
-        // Ensure all keys from defaultConfig are present
         const mergedConfig = { ...defaultConfig, ...parsedConfig };
         setConfig(mergedConfig);
       } else {
-        // First time load, set default config in storage
         localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultConfig));
         setConfig(defaultConfig);
       }
@@ -75,5 +82,15 @@ export function useBirthdayConfig() {
     }
   }, []);
 
-  return { config, saveConfig, isLoaded };
+  const value = { config, saveConfig, isLoaded };
+
+  return React.createElement(BirthdayConfigContext.Provider, { value }, children);
+}
+
+export function useBirthdayConfig() {
+    const context = useContext(BirthdayConfigContext);
+    if (context === undefined) {
+        throw new Error('useBirthdayConfig must be used within a BirthdayConfigProvider');
+    }
+    return context;
 }
