@@ -41,7 +41,7 @@ export default function BirthdayGreeting() {
 
   return (
     <div
-      className="relative w-full min-h-screen overflow-hidden flex flex-col p-4 animate-in fade-in duration-1000"
+      className="relative w-full min-h-screen overflow-hidden flex flex-col p-4"
       style={backgroundStyle}
     >
       {config.backgroundImage && <div className="absolute inset-0 bg-black/20 z-0" />}
@@ -65,6 +65,7 @@ export default function BirthdayGreeting() {
       <footer className="relative z-10 flex-shrink-0 flex justify-center items-end pt-4 pb-4 md:pb-8">
         <CuteCat className="w-24 md:w-32 -mr-4" />
         <BirthdayCake className="w-48 md:w-64" />
+        <CuteCat className="w-24 md:w-32 -ml-4 transform scale-x-[-1]" />
       </footer>
       
     </div>
