@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useBirthdayConfig } from "@/hooks/use-birthday-config";
 import { Skeleton } from "./ui/skeleton";
 import BirthdayCake from "./birthday-cake";
+import CuteCat from "./cute-cat";
 
 export default function BirthdayGreeting() {
   const { config, isLoaded } = useBirthdayConfig();
@@ -61,7 +62,8 @@ export default function BirthdayGreeting() {
         </Card>
       </main>
       
-      <footer className="relative z-10 flex-shrink-0 flex justify-center pt-4 pb-4 md:pb-8">
+      <footer className="relative z-10 flex-shrink-0 flex justify-center items-end pt-4 pb-4 md:pb-8">
+        <CuteCat className="w-24 md:w-32 -mr-4" />
         <BirthdayCake className="w-48 md:w-64" />
       </footer>
       
