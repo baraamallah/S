@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, createContext, useContext, ReactNode } from 'react';
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, setDoc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 export interface BirthdayConfig {
@@ -59,40 +59,36 @@ export function BirthdayConfigProvider({ children }: { children: ReactNode }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const fetchConfig = async () => {
-        try {
-            const configDocRef = doc(db, CONFIG_COLLECTION, CONFIG_DOC_ID);
-            const docSnap = await getDoc(configDocRef);
+    const configDocRef = doc(db, CONFIG_COLLECTION, CONFIG_DOC_ID);
     
-            if (docSnap.exists()) {
-                const fetchedConfig = docSnap.data() as BirthdayConfig;
-                // Merge with default to ensure all keys are present
-                const mergedConfig = { ...defaultConfig, ...fetchedConfig };
-                setConfig(mergedConfig);
-            } else {
-                // Doc doesn't exist, so create it with default values
-                await setDoc(configDocRef, defaultConfig);
-                setConfig(defaultConfig);
-            }
-        } catch (error) {
-            console.error("Failed to load config from Firebase", error);
-            // Fallback to default config on error
-            setConfig(defaultConfig);
-        }
+    const unsubscribe = onSnapshot(configDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const fetchedConfig = docSnap.data() as BirthdayConfig;
+        const mergedConfig = { ...defaultConfig, ...fetchedConfig };
+        setConfig(mergedConfig);
+      } else {
+        setDoc(configDocRef, defaultConfig).catch(error => {
+            console.error("Could not create default config doc:", error);
+        });
+        setConfig(defaultConfig);
+      }
+      setIsLoaded(true);
+    }, (error) => {
+        console.error("Failed to listen to config from Firebase", error);
+        setConfig(defaultConfig);
         setIsLoaded(true);
-    };
-    
-    fetchConfig();
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const saveConfig = useCallback(async (newConfig: BirthdayConfig) => {
     try {
       const configDocRef = doc(db, CONFIG_COLLECTION, CONFIG_DOC_ID);
       await setDoc(configDocRef, newConfig);
-      setConfig(newConfig);
     } catch (error) {
       console.error("Failed to save config to Firebase", error);
-      throw error; // Re-throw the error to be caught by the caller
+      throw error;
     }
   }, []);
 
