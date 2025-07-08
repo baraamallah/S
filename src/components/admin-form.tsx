@@ -37,6 +37,8 @@ const formSchema = z.object({
   date: z.date({
     required_error: "A date is required.",
   }),
+  hour: z.coerce.number().min(0, "Hour must be between 0-23").max(23, "Hour must be between 0-23"),
+  minute: z.coerce.number().min(0, "Minute must be between 0-59").max(59, "Minute must be between 0-59"),
   password: z.string().min(1, "Password cannot be empty."),
   title: z.string().min(1, "Greeting title cannot be empty."),
   poem: z.string().min(1, "Poem cannot be empty."),
@@ -82,23 +84,33 @@ export default function AdminForm() {
         gateButtonNow: '',
         gateButtonLater: '',
         cakeText: '',
+        hour: 0,
+        minute: 0,
     },
   });
 
   useEffect(() => {
     if (isLoaded) {
+      const savedDate = new Date(config.date);
       form.reset({
         ...config,
-        date: new Date(config.date),
+        date: savedDate,
+        hour: savedDate.getHours(),
+        minute: savedDate.getMinutes(),
         poem: config.poem.replace(/<br \/>/g, "\n"),
       });
     }
   }, [isLoaded, config, form]);
 
   function onSubmit(values: FormValues) {
+    const newDate = new Date(values.date);
+    newDate.setHours(values.hour);
+    newDate.setMinutes(values.minute);
+    newDate.setSeconds(0);
+
     const newConfig: BirthdayConfig = {
       ...values,
-      date: values.date.toISOString(),
+      date: newDate.toISOString(),
       poem: values.poem.replace(/\n/g, "<br />"),
       backgroundImage: values.backgroundImage || "",
     };
@@ -178,7 +190,7 @@ export default function AdminForm() {
                   name="date"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Birthday Date</FormLabel>
+                      <FormLabel>Birthday Date & Time</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -208,12 +220,20 @@ export default function AdminForm() {
                         </PopoverContent>
                       </Popover>
                       <FormDescription>
-                        The date when the surprise will be unlocked.
+                        The date and time when the surprise will be unlocked.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+                 <div className="flex items-center gap-4">
+                    <FormField control={form.control} name="hour" render={({ field }) => (
+                        <FormItem><FormLabel>Hour (0-23)</FormLabel><FormControl><Input type="number" min="0" max="23" {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name="minute" render={({ field }) => (
+                        <FormItem><FormLabel>Minute (0-59)</FormLabel><FormControl><Input type="number" min="0" max="59" {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                </div>
                 <FormField
                   control={form.control}
                   name="password"
