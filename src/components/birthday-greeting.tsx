@@ -5,9 +5,14 @@ import { Skeleton } from "./ui/skeleton";
 import BirthdayCake from "./birthday-cake";
 import CuteCat from "./cute-cat";
 import { Card, CardContent } from "./ui/card";
+import { useState } from "react";
+import { Button } from "./ui/button";
+import { PartyPopper } from "lucide-react";
+import Balloons from "./balloons";
 
 export default function BirthdayGreeting() {
   const { config, isLoaded } = useBirthdayConfig();
+  const [isCelebrating, setIsCelebrating] = useState(false);
 
   if (!isLoaded) {
     return (
@@ -42,9 +47,10 @@ export default function BirthdayGreeting() {
       className="relative w-full min-h-screen overflow-hidden flex flex-col p-4"
       style={backgroundStyle}
     >
+      {isCelebrating && <Balloons />}
       {config.backgroundImage && <div className="absolute inset-0 bg-black/20 z-0" />}
       
-      <main className="relative z-10 flex flex-grow flex-col justify-center items-center">
+      <main className="relative z-10 flex flex-grow flex-col justify-center items-center gap-6">
         <Card className="w-full max-w-2xl text-center bg-card/80 backdrop-blur-sm shadow-2xl rounded-2xl animate-in fade-in zoom-in-95 duration-700">
           <CardContent className="p-6 md:p-10">
             <h1 className="font-headline text-4xl md:text-6xl text-primary-foreground/90 drop-shadow-[0_2px_2px_rgba(0,0,0,0.2)]">
@@ -56,6 +62,16 @@ export default function BirthdayGreeting() {
             />
           </CardContent>
         </Card>
+        {!isCelebrating && (
+          <Button
+            onClick={() => setIsCelebrating(true)}
+            size="lg"
+            className="font-headline text-xl animate-in fade-in-50 duration-1000 delay-500 fill-mode-both"
+          >
+            <PartyPopper className="mr-3 h-6 w-6" />
+            Celebrate!
+          </Button>
+        )}
       </main>
       
       <footer className="relative z-10 flex-shrink-0 flex justify-center items-end pt-4 pb-4 md:pb-8">
