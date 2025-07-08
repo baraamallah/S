@@ -1,6 +1,8 @@
-export default function BirthdayCake() {
+import { cn } from "@/lib/utils";
+
+export default function BirthdayCake({ className }: { className?: string }) {
   return (
-    <div className="absolute bottom-0 left-4 w-48 md:w-64 z-20 pointer-events-none translate-y-12 md:translate-y-16">
+    <div className={cn("w-48 md:w-64 pointer-events-none", className)}>
       <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-lg">
         <defs>
           <g id="flame">

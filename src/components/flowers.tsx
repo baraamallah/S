@@ -1,6 +1,8 @@
-export default function Flowers() {
+import { cn } from "@/lib/utils";
+
+export default function Flowers({ className }: { className?: string }) {
   return (
-    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-80 md:w-96 z-10 pointer-events-none translate-y-8">
+    <div className={cn("pointer-events-none", className)}>
       <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
         <g transform="translate(20, 20) rotate(-15) scale(0.9)">
           {/* Stem */}
