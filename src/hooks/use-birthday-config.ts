@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, createContext, useContext, ReactNode } from 'react';
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export interface BirthdayConfig {
   date: string;
@@ -21,7 +23,8 @@ export interface BirthdayConfig {
   cakeText: string;
 }
 
-const STORAGE_KEY = 'sondosBirthdayConfig';
+const CONFIG_COLLECTION = 'settings';
+const CONFIG_DOC_ID = 'birthdayConfig';
 
 const defaultConfig: BirthdayConfig = {
   date: "2025-08-17T00:00:00",
@@ -56,29 +59,39 @@ export function BirthdayConfigProvider({ children }: { children: ReactNode }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    try {
-      const storedConfig = localStorage.getItem(STORAGE_KEY);
-      if (storedConfig) {
-        const parsedConfig = JSON.parse(storedConfig);
-        const mergedConfig = { ...defaultConfig, ...parsedConfig };
-        setConfig(mergedConfig);
-      } else {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultConfig));
-        setConfig(defaultConfig);
-      }
-    } catch (error) {
-      console.error("Failed to load config from localStorage", error);
-      setConfig(defaultConfig);
-    }
-    setIsLoaded(true);
+    const fetchConfig = async () => {
+        try {
+            const configDocRef = doc(db, CONFIG_COLLECTION, CONFIG_DOC_ID);
+            const docSnap = await getDoc(configDocRef);
+    
+            if (docSnap.exists()) {
+                const fetchedConfig = docSnap.data() as BirthdayConfig;
+                // Merge with default to ensure all keys are present
+                const mergedConfig = { ...defaultConfig, ...fetchedConfig };
+                setConfig(mergedConfig);
+            } else {
+                // Doc doesn't exist, so create it with default values
+                await setDoc(configDocRef, defaultConfig);
+                setConfig(defaultConfig);
+            }
+        } catch (error) {
+            console.error("Failed to load config from Firebase", error);
+            // Fallback to default config on error
+            setConfig(defaultConfig);
+        }
+        setIsLoaded(true);
+    };
+    
+    fetchConfig();
   }, []);
 
-  const saveConfig = useCallback((newConfig: BirthdayConfig) => {
+  const saveConfig = useCallback(async (newConfig: BirthdayConfig) => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newConfig));
+      const configDocRef = doc(db, CONFIG_COLLECTION, CONFIG_DOC_ID);
+      await setDoc(configDocRef, newConfig);
       setConfig(newConfig);
     } catch (error) {
-      console.error("Failed to save config to localStorage", error);
+      console.error("Failed to save config to Firebase", error);
     }
   }, []);
 
