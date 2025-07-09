@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect } from "react";
@@ -5,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
+import { fromZonedTime, zonedTimeToUtc } from "date-fns-tz";
 import { Calendar as CalendarIcon } from "lucide-react";
 import Image from "next/image";
 
@@ -25,6 +27,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useBirthdayConfig, BirthdayConfig } from "@/hooks/use-birthday-config";
@@ -32,6 +41,17 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "./ui/separator";
 
+const commonTimezones = [
+  "UTC",
+  "America/New_York",   // Eastern Time
+  "America/Chicago",    // Central Time
+  "America/Denver",     // Mountain Time
+  "America/Los_Angeles",// Pacific Time
+  "Europe/London",
+  "Europe/Paris",
+  "Asia/Tokyo",
+  "Australia/Sydney",
+];
 
 const formSchema = z.object({
   // Main Greeting Page
@@ -40,6 +60,7 @@ const formSchema = z.object({
   }),
   hour: z.coerce.number().min(0, "Hour must be between 0-23").max(23, "Hour must be between 0-23"),
   minute: z.coerce.number().min(0, "Minute must be between 0-59").max(59, "Minute must be between 0-59"),
+  timezone: z.string().min(1, "Timezone cannot be empty."),
   password: z.string().min(1, "Password cannot be empty."),
   title: z.string().min(1, "Greeting title cannot be empty."),
   poem: z.string().min(1, "Poem cannot be empty."),
@@ -87,32 +108,44 @@ export default function AdminForm() {
         cakeText: '',
         hour: 0,
         minute: 0,
+        timezone: 'America/New_York'
     },
   });
 
   useEffect(() => {
     if (isLoaded) {
-      const savedDate = new Date(config.date);
+      // The stored date is in UTC. We need to convert it to the "wall clock" time
+      // in the stored timezone to display it correctly in the form.
+      const savedUtcDate = new Date(config.date);
+      const zonedDate = fromZonedTime(savedUtcDate, config.timezone);
+
       form.reset({
         ...config,
-        date: savedDate,
-        hour: savedDate.getHours(),
-        minute: savedDate.getMinutes(),
+        date: zonedDate,
+        hour: zonedDate.getHours(),
+        minute: zonedDate.getMinutes(),
+        timezone: config.timezone,
         poem: config.poem.replace(/<br \/>/g, "\n"),
       });
     }
   }, [isLoaded, config, form]);
 
   async function onSubmit(values: FormValues) {
-    const newDate = new Date(values.date);
-    newDate.setHours(values.hour);
-    newDate.setMinutes(values.minute);
-    newDate.setSeconds(0);
+    // Take the "wall clock" time from the form...
+    const wallClockDate = new Date(values.date);
+    wallClockDate.setHours(values.hour);
+    wallClockDate.setMinutes(values.minute);
+    wallClockDate.setSeconds(0);
+    wallClockDate.setMilliseconds(0);
+
+    // ...and convert it from the selected timezone into a UTC date object.
+    const utcDate = zonedTimeToUtc(wallClockDate, values.timezone);
 
     const newConfig: BirthdayConfig = {
       ...config,
       ...values,
-      date: newDate.toISOString(),
+      date: utcDate.toISOString(), // Store the correct, absolute UTC time
+      timezone: values.timezone,
       poem: values.poem.replace(/\n/g, "<br />"),
       backgroundImage: values.backgroundImage || "",
     };
@@ -202,7 +235,7 @@ export default function AdminForm() {
                   name="date"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Birthday Date & Time</FormLabel>
+                      <FormLabel>Birthday Date</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -232,7 +265,7 @@ export default function AdminForm() {
                         </PopoverContent>
                       </Popover>
                       <FormDescription>
-                        The date and time when the surprise will be unlocked.
+                        The date the surprise will be unlocked.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -246,6 +279,31 @@ export default function AdminForm() {
                         <FormItem><FormLabel>Minute (0-59)</FormLabel><FormControl><Input type="number" min="0" max="59" {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
                 </div>
+                 <FormField
+                    control={form.control}
+                    name="timezone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Timezone</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a timezone" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {commonTimezones.map(tz => (
+                                <SelectItem key={tz} value={tz}>{tz.replace(/_/g, ' ')}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          The timezone for the unlock time. Daylight Saving is handled automatically.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 <FormField
                   control={form.control}
                   name="password"

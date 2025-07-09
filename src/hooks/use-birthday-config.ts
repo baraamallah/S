@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useCallback, createContext, useContext, ReactNode } from 'react';
@@ -6,6 +7,7 @@ import { db } from "@/lib/firebase";
 
 export interface BirthdayConfig {
   date: string;
+  timezone: string;
   password: string;
   title: string;
   poem: string;
@@ -27,7 +29,8 @@ const CONFIG_COLLECTION = 'settings';
 const CONFIG_DOC_ID = 'birthdayConfig';
 
 const defaultConfig: BirthdayConfig = {
-  date: "2025-08-17T00:00:00",
+  date: "2025-08-17T00:00:00.000Z",
+  timezone: "America/New_York",
   password: "Best Friend",
   title: "Happy Birthday, Sondos!",
   poem: `Of all the stars in the night sky,<br />yours is the one that shines most high.<br />Through every chapter, laugh, and tear,<br />you grow more wonderful each year.<br />May all your wishes, big and small,<br />come true today, have a ball!`,

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
@@ -146,7 +147,7 @@ export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
       <CardContent className="space-y-6 pt-6">
         {!isTimeUp && (
           <div className="space-y-4 text-center animate-in fade-in-50 duration-500">
-            <p className="font-body text-muted-foreground">{config.gateTimerText}</p>
+            <p className="font-body text-muted-foreground">{config.gateTimerText} ({config.timezone.replace(/_/g, ' ')})</p>
             <div className="flex justify-around p-4 rounded-lg bg-background">
               {timerComponents.some(c => c !== null) ? timerComponents : <p>Loading countdown...</p>}
             </div>
