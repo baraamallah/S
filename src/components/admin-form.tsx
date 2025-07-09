@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useMemo } from "react";
@@ -40,6 +41,8 @@ import { cn, convertGoogleDriveUrl } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "./ui/separator";
 
+const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+
 const formSchema = z.object({
   // Security
   adminPassword: z.string().min(1, "Admin password cannot be empty."),
@@ -71,6 +74,14 @@ const formSchema = z.object({
   gatePromptLater: z.string().min(1, "Prompt for 'early peek' cannot be empty."),
   gateButtonNow: z.string().min(1, "Button text for 'time is up' cannot be empty."),
   gateButtonLater: z.string().min(1, "Button text for 'early peek' cannot be empty."),
+  
+  // Theme Colors
+  primaryColor: z.string().regex(hexColorRegex, 'Invalid hex color').optional().or(z.literal('')),
+  accentColor: z.string().regex(hexColorRegex, 'Invalid hex color').optional().or(z.literal('')),
+  backgroundColor: z.string().regex(hexColorRegex, 'Invalid hex color').optional().or(z.literal('')),
+  foregroundColor: z.string().regex(hexColorRegex, 'Invalid hex color').optional().or(z.literal('')),
+  cardColor: z.string().regex(hexColorRegex, 'Invalid hex color').optional().or(z.literal('')),
+  borderColor: z.string().regex(hexColorRegex, 'Invalid hex color').optional().or(z.literal('')),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -120,7 +131,13 @@ export default function AdminForm() {
         cakeText: '',
         hour: 0,
         minute: 0,
-        timezone: 'America/New_York'
+        timezone: 'America/New_York',
+        primaryColor: '',
+        accentColor: '',
+        backgroundColor: '',
+        foregroundColor: '',
+        cardColor: '',
+        borderColor: '',
     },
   });
 
@@ -205,6 +222,81 @@ export default function AdminForm() {
                     <FormDescription>The password to access this admin settings page.</FormDescription>
                     <FormMessage />
                   </FormItem>
+                )} />
+              </div>
+            </div>
+            <Separator />
+
+            {/* Theme & Colors */}
+            <div>
+              <h3 className="text-lg font-medium mb-4">Theme &amp; Colors</h3>
+              <FormDescription className="mb-4">Customize the main colors of the site. The changes will apply live.</FormDescription>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField control={form.control} name="primaryColor" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Primary Color</FormLabel>
+                        <div className="flex items-center gap-2">
+                            <FormControl><Input type="color" {...field} value={field.value ?? '#000000'} className="p-1 h-10 w-10 shrink-0" /></FormControl>
+                            <FormControl><Input type="text" {...field} placeholder="#f56e88" /></FormControl>
+                        </div>
+                        <FormDescription>Buttons, links, highlights.</FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+                 <FormField control={form.control} name="accentColor" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Accent Color</FormLabel>
+                        <div className="flex items-center gap-2">
+                            <FormControl><Input type="color" {...field} value={field.value ?? '#000000'} className="p-1 h-10 w-10 shrink-0" /></FormControl>
+                            <FormControl><Input type="text" {...field} placeholder="#f5b3c2" /></FormControl>
+                        </div>
+                        <FormDescription>Balloons, decorations.</FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+                 <FormField control={form.control} name="backgroundColor" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Background Color</FormLabel>
+                        <div className="flex items-center gap-2">
+                            <FormControl><Input type="color" {...field} value={field.value ?? '#000000'} className="p-1 h-10 w-10 shrink-0" /></FormControl>
+                            <FormControl><Input type="text" {...field} placeholder="#f9f8f6" /></FormControl>
+                        </div>
+                        <FormDescription>Main page background.</FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+                 <FormField control={form.control} name="foregroundColor" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Foreground Color</FormLabel>
+                        <div className="flex items-center gap-2">
+                            <FormControl><Input type="color" {...field} value={field.value ?? '#000000'} className="p-1 h-10 w-10 shrink-0" /></FormControl>
+                            <FormControl><Input type="text" {...field} placeholder="#4a4540" /></FormControl>
+                        </div>
+                        <FormDescription>Main text color.</FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+                 <FormField control={form.control} name="cardColor" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Card Color</FormLabel>
+                        <div className="flex items-center gap-2">
+                            <FormControl><Input type="color" {...field} value={field.value ?? '#000000'} className="p-1 h-10 w-10 shrink-0" /></FormControl>
+                            <FormControl><Input type="text" {...field} placeholder="#ffffff" /></FormControl>
+                        </div>
+                        <FormDescription>Background of cards.</FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+                 <FormField control={form.control} name="borderColor" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Border Color</FormLabel>
+                        <div className="flex items-center gap-2">
+                            <FormControl><Input type="color" {...field} value={field.value ?? '#000000'} className="p-1 h-10 w-10 shrink-0" /></FormControl>
+                            <FormControl><Input type="text" {...field} placeholder="#efd9de" /></FormControl>
+                        </div>
+                        <FormDescription>Borders and separators.</FormDescription>
+                        <FormMessage />
+                    </FormItem>
                 )} />
               </div>
             </div>
@@ -443,4 +535,3 @@ export default function AdminForm() {
     </Card>
   );
 }
-    

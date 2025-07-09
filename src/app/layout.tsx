@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { BirthdayConfigProvider } from '@/hooks/use-birthday-config';
+import DynamicThemeInjector from '@/components/dynamic-theme-injector';
 
 export const metadata: Metadata = {
   title: 'Sondos\' Magical Birthday',
@@ -22,6 +23,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <BirthdayConfigProvider>
+          <DynamicThemeInjector />
           {children}
         </BirthdayConfigProvider>
         <Toaster />

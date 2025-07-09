@@ -25,6 +25,13 @@ export interface BirthdayConfig {
   gateButtonNow: string;
   gateButtonLater: string;
   cakeText: string;
+  // Theme colors
+  primaryColor?: string;
+  accentColor?: string;
+  backgroundColor?: string;
+  foregroundColor?: string;
+  cardColor?: string;
+  borderColor?: string;
 }
 
 const CONFIG_COLLECTION = 'settings';
@@ -50,6 +57,12 @@ const defaultConfig: BirthdayConfig = {
   gateButtonNow: "Unlock Surprise",
   gateButtonLater: "Sneak a Peek",
   cakeText: "Thank You!",
+  primaryColor: '#f56e88',
+  accentColor: '#f5b3c2',
+  backgroundColor: '#f9f8f6',
+  foregroundColor: '#4a4540',
+  cardColor: '#ffffff',
+  borderColor: '#efd9de',
 };
 
 
