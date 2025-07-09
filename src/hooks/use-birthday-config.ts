@@ -10,6 +10,7 @@ export interface BirthdayConfig {
   title: string;
   poem: string;
   backgroundImage: string;
+  photoGallery: string[];
   entryTitle: string;
   entrySubtitle: string;
   entryButtonText: string;
@@ -32,6 +33,7 @@ const defaultConfig: BirthdayConfig = {
   title: "Happy Birthday, Sondos!",
   poem: `Of all the stars in the night sky,<br />yours is the one that shines most high.<br />Through every chapter, laugh, and tear,<br />you grow more wonderful each year.<br />May all your wishes, big and small,<br />come true today, have a ball!`,
   backgroundImage: "",
+  photoGallery: [],
   entryTitle: "A Surprise for Sondos",
   entrySubtitle: "Click below to begin the magical celebration!",
   entryButtonText: "Click to Enter",
@@ -48,7 +50,7 @@ const defaultConfig: BirthdayConfig = {
 
 interface BirthdayConfigContextType {
     config: BirthdayConfig;
-    saveConfig: (newConfig: BirthdayConfig) => Promise<void>;
+    saveConfig: (newConfig: Partial<BirthdayConfig>) => Promise<void>;
     isLoaded: boolean;
 }
 
@@ -63,7 +65,7 @@ export function BirthdayConfigProvider({ children }: { children: ReactNode }) {
     
     const unsubscribe = onSnapshot(configDocRef, (docSnap) => {
       if (docSnap.exists()) {
-        const fetchedConfig = docSnap.data() as BirthdayConfig;
+        const fetchedConfig = docSnap.data() as Partial<BirthdayConfig>;
         const mergedConfig = { ...defaultConfig, ...fetchedConfig };
         setConfig(mergedConfig);
       } else {
@@ -82,10 +84,10 @@ export function BirthdayConfigProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-  const saveConfig = useCallback(async (newConfig: BirthdayConfig) => {
+  const saveConfig = useCallback(async (newConfig: Partial<BirthdayConfig>) => {
     try {
       const configDocRef = doc(db, CONFIG_COLLECTION, CONFIG_DOC_ID);
-      await setDoc(configDocRef, newConfig);
+      await setDoc(configDocRef, newConfig, { merge: true });
     } catch (error) {
       console.error("Failed to save config to Firebase", error);
       throw error;
