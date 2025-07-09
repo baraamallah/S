@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
-import { fromZonedTime, zonedTimeToUtc } from "date-fns-tz";
+import { toZonedTime, fromZonedTime } from "date-fns-tz";
 import { Calendar as CalendarIcon } from "lucide-react";
 import Image from "next/image";
 
@@ -123,7 +123,7 @@ export default function AdminForm() {
       // The stored date is in UTC. We need to convert it to the "wall clock" time
       // in the stored timezone to display it correctly in the form.
       const savedUtcDate = new Date(config.date);
-      const zonedDate = fromZonedTime(savedUtcDate, config.timezone);
+      const zonedDate = toZonedTime(savedUtcDate, config.timezone);
 
       form.reset({
         ...config,
@@ -146,7 +146,7 @@ export default function AdminForm() {
     wallClockDate.setMilliseconds(0);
 
     // ...and convert it from the selected timezone into a UTC date object.
-    const utcDate = zonedTimeToUtc(wallClockDate, values.timezone);
+    const utcDate = fromZonedTime(wallClockDate, values.timezone);
 
     const newConfig: BirthdayConfig = {
       ...config,
@@ -437,3 +437,4 @@ export default function AdminForm() {
     </Card>
   );
 }
+    
