@@ -36,7 +36,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useBirthdayConfig, BirthdayConfig } from "@/hooks/use-birthday-config";
-import { cn } from "@/lib/utils";
+import { cn, convertGoogleDriveUrl } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "./ui/separator";
 
@@ -160,8 +160,8 @@ export default function AdminForm() {
       date: utcDate.toISOString(), // Store the correct, absolute UTC time
       timezone: values.timezone,
       poem: values.poem.replace(/\n/g, "<br />"),
-      backgroundImage: values.backgroundImage || "",
-      photoGallery: values.photoGallery ? values.photoGallery.split('\n').map(url => url.trim()).filter(url => url) : [],
+      backgroundImage: values.backgroundImage ? convertGoogleDriveUrl(values.backgroundImage) : "",
+      photoGallery: values.photoGallery ? values.photoGallery.split('\n').map(url => url.trim()).filter(url => url).map(convertGoogleDriveUrl) : [],
     };
     
     try {
@@ -390,7 +390,7 @@ export default function AdminForm() {
                         <Input placeholder="https://placehold.co/1280x720.png" {...field} value={field.value ?? ''} />
                       </FormControl>
                       <FormDescription>
-                        Provide a URL for a background image. Leave empty for a plain color.
+                        Provide a URL for a background image. Supports Google Drive links. Leave empty for a plain color.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -411,7 +411,7 @@ export default function AdminForm() {
                         />
                       </FormControl>
                       <FormDescription>
-                        Add image URLs for the photo gallery, one per line.
+                        Add image URLs for the photo gallery, one per line. Supports Google Drive links.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
