@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { BirthdayConfigProvider } from '@/hooks/use-birthday-config';
 import DynamicThemeInjector from '@/components/dynamic-theme-injector';
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: 'Sondos\' Magical Birthday',
@@ -27,6 +28,7 @@ export default function RootLayout({
           {children}
         </BirthdayConfigProvider>
         <Toaster />
+        <Analytics />
       </body>
     </html>
   );
