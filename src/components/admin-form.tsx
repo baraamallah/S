@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -41,18 +40,6 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "./ui/separator";
 
-const commonTimezones = [
-  "UTC",
-  "America/New_York",   // Eastern Time
-  "America/Chicago",    // Central Time
-  "America/Denver",     // Mountain Time
-  "America/Los_Angeles",// Pacific Time
-  "Europe/London",
-  "Europe/Paris",
-  "Asia/Tokyo",
-  "Australia/Sydney",
-];
-
 const formSchema = z.object({
   // Security
   adminPassword: z.string().min(1, "Admin password cannot be empty."),
@@ -91,6 +78,25 @@ type FormValues = z.infer<typeof formSchema>;
 export default function AdminForm() {
   const { config, saveConfig, isLoaded } = useBirthdayConfig();
   const { toast } = useToast();
+
+  const allTimezones = useMemo(() => {
+    try {
+      return Intl.supportedValuesOf("timeZone");
+    } catch (e) {
+      console.warn("Intl.supportedValuesOf is not available, falling back to a common list of timezones.");
+      return [
+        "UTC",
+        "America/New_York",
+        "America/Chicago",
+        "America/Denver",
+        "America/Los_Angeles",
+        "Europe/London",
+        "Europe/Paris",
+        "Asia/Tokyo",
+        "Australia/Sydney",
+      ];
+    }
+  }, []);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -315,8 +321,8 @@ export default function AdminForm() {
                               <SelectValue placeholder="Select a timezone" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
-                            {commonTimezones.map(tz => (
+                          <SelectContent className="max-h-96">
+                            {allTimezones.map(tz => (
                                 <SelectItem key={tz} value={tz}>{tz.replace(/_/g, ' ')}</SelectItem>
                             ))}
                           </SelectContent>
