@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useBirthdayConfig } from "@/hooks/use-birthday-config";
@@ -9,6 +10,7 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { PartyPopper } from "lucide-react";
 import Balloons from "./balloons";
+import PhotoCarousel from "./photo-carousel";
 
 export default function BirthdayGreeting() {
   const { config, isLoaded } = useBirthdayConfig();
@@ -62,6 +64,9 @@ export default function BirthdayGreeting() {
             />
           </CardContent>
         </Card>
+
+        <PhotoCarousel />
+        
         {!isCelebrating && (
           <Button
             onClick={() => setIsCelebrating(true)}

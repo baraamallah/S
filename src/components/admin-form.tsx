@@ -54,6 +54,9 @@ const commonTimezones = [
 ];
 
 const formSchema = z.object({
+  // Security
+  adminPassword: z.string().min(1, "Admin password cannot be empty."),
+
   // Main Greeting Page
   date: z.date({
     required_error: "A date is required.",
@@ -65,6 +68,7 @@ const formSchema = z.object({
   title: z.string().min(1, "Greeting title cannot be empty."),
   poem: z.string().min(1, "Poem cannot be empty."),
   backgroundImage: z.string().optional(),
+  photoGallery: z.string().optional(),
   cakeText: z.string().min(1, "Cake text cannot be empty."),
   
   // Entry Page
@@ -92,9 +96,11 @@ export default function AdminForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
         password: '',
+        adminPassword: '',
         title: '',
         poem: '',
         backgroundImage: '',
+        photoGallery: '',
         entryTitle: '',
         entrySubtitle: '',
         entryButtonText: '',
@@ -126,6 +132,7 @@ export default function AdminForm() {
         minute: zonedDate.getMinutes(),
         timezone: config.timezone,
         poem: config.poem.replace(/<br \/>/g, "\n"),
+        photoGallery: (config.photoGallery || []).join("\n"),
       });
     }
   }, [isLoaded, config, form]);
@@ -148,6 +155,7 @@ export default function AdminForm() {
       timezone: values.timezone,
       poem: values.poem.replace(/\n/g, "<br />"),
       backgroundImage: values.backgroundImage || "",
+      photoGallery: values.photoGallery ? values.photoGallery.split('\n').map(url => url.trim()).filter(url => url) : [],
     };
     
     try {
@@ -179,6 +187,22 @@ export default function AdminForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+
+            {/* Security Settings */}
+            <div>
+              <h3 className="text-lg font-medium mb-4">Security</h3>
+              <div className="space-y-4">
+                 <FormField control={form.control} name="adminPassword" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Admin Page Password</FormLabel>
+                    <FormControl><Input type="password" {...field} /></FormControl>
+                    <FormDescription>The password to access this admin settings page.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+            </div>
+            <Separator />
             
             {/* Entry Page Settings */}
             <div>
@@ -361,6 +385,27 @@ export default function AdminForm() {
                       </FormControl>
                       <FormDescription>
                         Provide a URL for a background image. Leave empty for a plain color.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="photoGallery"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Photo Gallery URLs</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="One photo URL per line..."
+                          className="min-h-[100px]"
+                          {...field}
+                          value={field.value ?? ''}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Add image URLs for the photo gallery, one per line.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>

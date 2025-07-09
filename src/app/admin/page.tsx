@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -6,19 +7,18 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-
-// A simple, hardcoded password to protect the admin page.
-// In a real app, this should be a proper authentication system.
-const ADMIN_PASSWORD = "admin123";
+import { useBirthdayConfig } from "@/hooks/use-birthday-config";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const { toast } = useToast();
+  const { config, isLoaded } = useBirthdayConfig();
 
   const handleAdminLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
+    if (password === config.adminPassword) {
       setIsAuthenticated(true);
     } else {
       toast({
@@ -29,6 +29,25 @@ export default function AdminPage() {
       setPassword("");
     }
   };
+
+  if (!isLoaded) {
+    return (
+        <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8 bg-muted/40">
+            <Card className="w-full max-w-md">
+              <CardHeader>
+                  <Skeleton className="h-8 w-3/4" />
+                  <Skeleton className="h-5 w-1/2 mt-2" />
+              </CardHeader>
+              <CardContent>
+                  <div className="space-y-4 pt-6">
+                      <Skeleton className="h-10 w-full" />
+                      <Skeleton className="h-10 w-full" />
+                  </div>
+              </CardContent>
+            </Card>
+        </main>
+    )
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8 bg-muted/40">

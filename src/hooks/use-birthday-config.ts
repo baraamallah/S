@@ -9,9 +9,11 @@ export interface BirthdayConfig {
   date: string;
   timezone: string;
   password: string;
+  adminPassword: string;
   title: string;
   poem: string;
   backgroundImage: string;
+  photoGallery: string[];
   entryTitle: string;
   entrySubtitle: string;
   entryButtonText: string;
@@ -32,9 +34,11 @@ const defaultConfig: BirthdayConfig = {
   date: "2025-08-17T00:00:00.000Z",
   timezone: "America/New_York",
   password: "Best Friend",
+  adminPassword: "admin123",
   title: "Happy Birthday, Sondos!",
   poem: `Of all the stars in the night sky,<br />yours is the one that shines most high.<br />Through every chapter, laugh, and tear,<br />you grow more wonderful each year.<br />May all your wishes, big and small,<br />come true today, have a ball!`,
   backgroundImage: "",
+  photoGallery: [],
   entryTitle: "A Surprise for Sondos",
   entrySubtitle: "Click below to begin the magical celebration!",
   entryButtonText: "Click to Enter",
