@@ -10,7 +10,6 @@ export interface BirthdayConfig {
   title: string;
   poem: string;
   backgroundImage: string;
-  photoGallery: string[];
   entryTitle: string;
   entrySubtitle: string;
   entryButtonText: string;
@@ -33,7 +32,6 @@ const defaultConfig: BirthdayConfig = {
   title: "Happy Birthday, Sondos!",
   poem: `Of all the stars in the night sky,<br />yours is the one that shines most high.<br />Through every chapter, laugh, and tear,<br />you grow more wonderful each year.<br />May all your wishes, big and small,<br />come true today, have a ball!`,
   backgroundImage: "",
-  photoGallery: [],
   entryTitle: "A Surprise for Sondos",
   entrySubtitle: "Click below to begin the magical celebration!",
   entryButtonText: "Click to Enter",

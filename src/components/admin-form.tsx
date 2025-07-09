@@ -44,7 +44,6 @@ const formSchema = z.object({
   title: z.string().min(1, "Greeting title cannot be empty."),
   poem: z.string().min(1, "Poem cannot be empty."),
   backgroundImage: z.string().optional(),
-  photoGallery: z.string().optional(),
   cakeText: z.string().min(1, "Cake text cannot be empty."),
   
   // Entry Page
@@ -75,7 +74,6 @@ export default function AdminForm() {
         title: '',
         poem: '',
         backgroundImage: '',
-        photoGallery: '',
         entryTitle: '',
         entrySubtitle: '',
         entryButtonText: '',
@@ -101,7 +99,6 @@ export default function AdminForm() {
         hour: savedDate.getHours(),
         minute: savedDate.getMinutes(),
         poem: config.poem.replace(/<br \/>/g, "\n"),
-        photoGallery: config.photoGallery?.join('\n') || '',
       });
     }
   }, [isLoaded, config, form]);
@@ -118,7 +115,6 @@ export default function AdminForm() {
       date: newDate.toISOString(),
       poem: values.poem.replace(/\n/g, "<br />"),
       backgroundImage: values.backgroundImage || "",
-      photoGallery: values.photoGallery ? values.photoGallery.split('\n').filter(url => url.trim() !== '') : [],
     };
     
     try {
@@ -307,29 +303,6 @@ export default function AdminForm() {
                       </FormControl>
                       <FormDescription>
                         Provide a URL for a background image. Leave empty for a plain color.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                 <FormField
-                  control={form.control}
-                  name="photoGallery"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Photo Gallery URLs</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="https://placehold.co/600x400.png
-https://placehold.co/600x400.png
-https://placehold.co/600x400.png"
-                          className="min-h-[120px]"
-                          {...field}
-                          value={field.value ?? ''}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Add one image URL per line. These will be displayed in a carousel.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
