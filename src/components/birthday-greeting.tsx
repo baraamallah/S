@@ -11,6 +11,7 @@ import { Button } from "./ui/button";
 import { PartyPopper } from "lucide-react";
 import Balloons from "./balloons";
 import PhotoCarousel from "./photo-carousel";
+import Fireworks from "./fireworks";
 
 export default function BirthdayGreeting() {
   const { config, isLoaded } = useBirthdayConfig();
@@ -50,6 +51,7 @@ export default function BirthdayGreeting() {
       style={backgroundStyle}
     >
       {isCelebrating && <Balloons />}
+      <Fireworks isActive={isCelebrating} />
       {config.backgroundImage && <div className="absolute inset-0 bg-black/20 z-0" />}
       
       <main className="relative z-10 flex flex-grow flex-col justify-center items-center gap-6">
