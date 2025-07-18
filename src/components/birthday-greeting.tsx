@@ -45,13 +45,21 @@ export default function BirthdayGreeting({ letter }: { letter: Letter }) {
       }
     : {};
 
+  const handleCelebrate = () => {
+    setIsCelebrating(true);
+  }
+
+  const showBalloons = letter.showBalloons !== false;
+  const showFireworks = letter.showFireworks !== false;
+  const showCakeAndCats = letter.showCakeAndCats !== false;
+
   return (
     <div
       className="relative w-full min-h-screen overflow-hidden flex flex-col p-4"
       style={backgroundStyle}
     >
-      {isCelebrating && <Balloons />}
-      <Fireworks isActive={isCelebrating} />
+      {isCelebrating && showBalloons && <Balloons />}
+      {isCelebrating && showFireworks && <Fireworks isActive={isCelebrating} />}
       {config.backgroundImage && <div className="absolute inset-0 bg-black/20 z-0" />}
       
       <main className="relative z-10 flex flex-grow flex-col justify-center items-center gap-6">
@@ -69,9 +77,9 @@ export default function BirthdayGreeting({ letter }: { letter: Letter }) {
 
         <PhotoCarousel />
         
-        {!isCelebrating && (
+        {!isCelebrating && (showBalloons || showFireworks) && (
           <Button
-            onClick={() => setIsCelebrating(true)}
+            onClick={handleCelebrate}
             size="lg"
             className="font-headline text-xl animate-in fade-in-50 duration-1000 delay-500 fill-mode-both"
           >
@@ -81,11 +89,13 @@ export default function BirthdayGreeting({ letter }: { letter: Letter }) {
         )}
       </main>
       
-      <footer className="relative z-10 flex-shrink-0 flex justify-center items-end pt-4 pb-4 md:pb-8">
-        <CuteCat className="w-24 md:w-32 -mr-4" />
-        <BirthdayCake className="w-48 md:w-64" />
-        <CuteCat className="w-24 md:w-32 -ml-4 transform scale-x-[-1]" />
-      </footer>
+      {showCakeAndCats && (
+        <footer className="relative z-10 flex-shrink-0 flex justify-center items-end pt-4 pb-4 md:pb-8">
+          <CuteCat className="w-24 md:w-32 -mr-4" />
+          <BirthdayCake className="w-48 md:w-64" />
+          <CuteCat className="w-24 md:w-32 -ml-4 transform scale-x-[-1]" />
+        </footer>
+      )}
       
     </div>
   );

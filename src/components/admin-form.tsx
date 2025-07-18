@@ -49,6 +49,9 @@ const letterSchema = z.object({
     title: z.string().min(1, "Letter title cannot be empty."),
     content: z.string().min(1, "Letter content cannot be empty."),
     isActive: z.boolean(),
+    showBalloons: z.boolean(),
+    showFireworks: z.boolean(),
+    showCakeAndCats: z.boolean(),
 });
 
 const formSchema = z.object({
@@ -157,9 +160,12 @@ export default function AdminForm() {
       const savedUtcDate = new Date(config.date);
       const zonedDate = toZonedTime(savedUtcDate, config.timezone);
 
-      const lettersWithNewlines = config.letters.map(letter => ({
+      const lettersWithDefaults = config.letters.map(letter => ({
         ...letter,
         content: letter.content.replace(/<br \/>/g, "\n"),
+        showBalloons: letter.showBalloons !== false, // default to true
+        showFireworks: letter.showFireworks !== false, // default to true
+        showCakeAndCats: letter.showCakeAndCats !== false, // default to true
       }));
 
       form.reset({
@@ -168,7 +174,7 @@ export default function AdminForm() {
         hour: zonedDate.getHours(),
         minute: zonedDate.getMinutes(),
         timezone: config.timezone,
-        letters: lettersWithNewlines,
+        letters: lettersWithDefaults,
         photoGallery: (config.photoGallery || []).join("\n"),
       });
     }
@@ -576,13 +582,74 @@ export default function AdminForm() {
                             </FormItem>
                           )}
                         />
+
+                        <div>
+                            <FormLabel className="text-base font-medium">Decorations</FormLabel>
+                            <div className="space-y-2 mt-2">
+                                <FormField
+                                  control={form.control}
+                                  name={`letters.${index}.showBalloons`}
+                                  render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-background">
+                                      <FormLabel className="font-normal">Show Balloons</FormLabel>
+                                      <FormControl>
+                                        <Switch
+                                          checked={field.value}
+                                          onCheckedChange={field.onChange}
+                                        />
+                                      </FormControl>
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name={`letters.${index}.showFireworks`}
+                                  render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-background">
+                                      <FormLabel className="font-normal">Show Fireworks</FormLabel>
+                                      <FormControl>
+                                        <Switch
+                                          checked={field.value}
+                                          onCheckedChange={field.onChange}
+                                        />
+                                      </FormControl>
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name={`letters.${index}.showCakeAndCats`}
+                                  render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-background">
+                                      <FormLabel className="font-normal">Show Cake & Cats</FormLabel>
+                                      <FormControl>
+                                        <Switch
+                                          checked={field.value}
+                                          onCheckedChange={field.onChange}
+                                        />
+                                      </FormControl>
+                                    </FormItem>
+                                  )}
+                                />
+                            </div>
+                        </div>
+
                       </div>
                     </Card>
                 ))}
                  <Button
                   type="button"
                   variant="outline"
-                  onClick={() => append({ id: `letter-${Date.now()}`, magicWord: '', title: '', content: '', isActive: true })}
+                  onClick={() => append({ 
+                    id: `letter-${Date.now()}`, 
+                    magicWord: '', 
+                    title: '', 
+                    content: '', 
+                    isActive: true,
+                    showBalloons: true,
+                    showFireworks: true,
+                    showCakeAndCats: true,
+                  })}
                 >
                   Add Another Letter
                 </Button>

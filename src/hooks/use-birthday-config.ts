@@ -11,6 +11,9 @@ export interface Letter {
   title: string;
   content: string;
   isActive: boolean;
+  showBalloons?: boolean;
+  showFireworks?: boolean;
+  showCakeAndCats?: boolean;
 }
 
 export interface BirthdayConfig {
@@ -53,6 +56,9 @@ const defaultConfig: BirthdayConfig = {
       title: "Happy Birthday, Sondos!",
       content: `Of all the stars in the night sky,<br />yours is the one that shines most high.<br />Through every chapter, laugh, and tear,<br />you grow more wonderful each year.<br />May all your wishes, big and small,<br />come true today, have a ball!`,
       isActive: true,
+      showBalloons: true,
+      showFireworks: true,
+      showCakeAndCats: true,
     }
   ],
   adminPassword: "admin123",
