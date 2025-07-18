@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useBirthdayConfig } from "@/hooks/use-birthday-config";
+import { useBirthdayConfig, type Letter } from "@/hooks/use-birthday-config";
 import { Skeleton } from "./ui/skeleton";
 import BirthdayCake from "./birthday-cake";
 import CuteCat from "./cute-cat";
@@ -13,7 +13,7 @@ import Balloons from "./balloons";
 import PhotoCarousel from "./photo-carousel";
 import Fireworks from "./fireworks";
 
-export default function BirthdayGreeting() {
+export default function BirthdayGreeting({ letter }: { letter: Letter }) {
   const { config, isLoaded } = useBirthdayConfig();
   const [isCelebrating, setIsCelebrating] = useState(false);
 
@@ -58,11 +58,11 @@ export default function BirthdayGreeting() {
         <Card className="w-full max-w-2xl text-center bg-card/80 backdrop-blur-sm shadow-2xl rounded-2xl animate-in fade-in zoom-in-95 duration-700">
           <CardContent className="p-6 md:p-10">
             <h1 className="font-headline text-4xl md:text-6xl text-primary-foreground/90 drop-shadow-[0_2px_2px_rgba(0,0,0,0.2)]">
-              {config.title}
+              {letter.title}
             </h1>
             <p 
               className="font-body text-base md:text-lg mt-6 text-foreground/80"
-              dangerouslySetInnerHTML={{ __html: config.poem }}
+              dangerouslySetInnerHTML={{ __html: letter.content }}
             />
           </CardContent>
         </Card>

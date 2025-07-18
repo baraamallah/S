@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { useBirthdayConfig } from "@/hooks/use-birthday-config";
+import { useBirthdayConfig, type Letter } from "@/hooks/use-birthday-config";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface TimeLeft {
@@ -22,7 +22,7 @@ interface TimeLeft {
   seconds?: number;
 }
 
-export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
+export default function PasswordGate({ onSuccess }: { onSuccess: (letter: Letter) => void }) {
   const { config, isLoaded } = useBirthdayConfig();
   
   const birthdayDate = useMemo(() => new Date(config.date), [config.date]);
@@ -66,12 +66,17 @@ export default function PasswordGate({ onSuccess }: { onSuccess: () => void }) {
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passwordInput.toLowerCase().trim() === config.password.toLowerCase().trim()) {
-      onSuccess();
+    const enteredWord = passwordInput.trim().toLowerCase();
+    const matchingLetter = config.letters.find(
+      letter => letter.isActive && letter.magicWord.trim().toLowerCase() === enteredWord
+    );
+
+    if (matchingLetter) {
+      onSuccess(matchingLetter);
     } else {
       toast({
         title: "Oops!",
-        description: "That's not the magic word. Please try again!",
+        description: "That's not a magic word. Please try again!",
         variant: "destructive",
       });
       setPasswordInput("");

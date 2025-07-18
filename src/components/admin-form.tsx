@@ -3,12 +3,11 @@
 
 import { useEffect, useMemo } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
 import { toZonedTime, fromZonedTime } from "date-fns-tz";
-import { Calendar as CalendarIcon } from "lucide-react";
-import Image from "next/image";
+import { Calendar as CalendarIcon, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -40,8 +39,17 @@ import { useBirthdayConfig, BirthdayConfig } from "@/hooks/use-birthday-config";
 import { cn, convertGoogleDriveUrl } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "./ui/separator";
+import { Switch } from "./ui/switch";
 
 const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+
+const letterSchema = z.object({
+    id: z.string(),
+    magicWord: z.string().min(1, "Magic word cannot be empty."),
+    title: z.string().min(1, "Letter title cannot be empty."),
+    content: z.string().min(1, "Letter content cannot be empty."),
+    isActive: z.boolean(),
+});
 
 const formSchema = z.object({
   // Security
@@ -54,9 +62,9 @@ const formSchema = z.object({
   hour: z.coerce.number().min(0, "Hour must be between 0-23").max(23, "Hour must be between 0-23"),
   minute: z.coerce.number().min(0, "Minute must be between 0-59").max(59, "Minute must be between 0-59"),
   timezone: z.string().min(1, "Timezone cannot be empty."),
-  password: z.string().min(1, "Password cannot be empty."),
-  title: z.string().min(1, "Greeting title cannot be empty."),
-  poem: z.string().min(1, "Poem cannot be empty."),
+  
+  letters: z.array(letterSchema).min(1, "You must have at least one letter."),
+
   backgroundImage: z.string().optional(),
   photoGallery: z.string().optional(),
   cakeText: z.string().min(1, "Cake text cannot be empty."),
@@ -112,10 +120,8 @@ export default function AdminForm() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-        password: '',
         adminPassword: '',
-        title: '',
-        poem: '',
+        letters: [],
         backgroundImage: '',
         photoGallery: '',
         entryTitle: '',
@@ -141,12 +147,20 @@ export default function AdminForm() {
     },
   });
 
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "letters"
+  });
+
   useEffect(() => {
     if (isLoaded) {
-      // The stored date is in UTC. We need to convert it to the "wall clock" time
-      // in the stored timezone to display it correctly in the form.
       const savedUtcDate = new Date(config.date);
       const zonedDate = toZonedTime(savedUtcDate, config.timezone);
+
+      const lettersWithNewlines = config.letters.map(letter => ({
+        ...letter,
+        content: letter.content.replace(/<br \/>/g, "\n"),
+      }));
 
       form.reset({
         ...config,
@@ -154,29 +168,32 @@ export default function AdminForm() {
         hour: zonedDate.getHours(),
         minute: zonedDate.getMinutes(),
         timezone: config.timezone,
-        poem: config.poem.replace(/<br \/>/g, "\n"),
+        letters: lettersWithNewlines,
         photoGallery: (config.photoGallery || []).join("\n"),
       });
     }
   }, [isLoaded, config, form]);
 
   async function onSubmit(values: FormValues) {
-    // Take the "wall clock" time from the form...
     const wallClockDate = new Date(values.date);
     wallClockDate.setHours(values.hour);
     wallClockDate.setMinutes(values.minute);
     wallClockDate.setSeconds(0);
     wallClockDate.setMilliseconds(0);
 
-    // ...and convert it from the selected timezone into a UTC date object.
     const utcDate = fromZonedTime(wallClockDate, values.timezone);
+
+    const processedLetters = values.letters.map(letter => ({
+      ...letter,
+      content: letter.content.replace(/\n/g, "<br />"),
+    }));
 
     const newConfig: BirthdayConfig = {
       ...config,
       ...values,
-      date: utcDate.toISOString(), // Store the correct, absolute UTC time
+      date: utcDate.toISOString(),
       timezone: values.timezone,
-      poem: values.poem.replace(/\n/g, "<br />"),
+      letters: processedLetters,
       backgroundImage: values.backgroundImage ? convertGoogleDriveUrl(values.backgroundImage) : "",
       photoGallery: values.photoGallery ? values.photoGallery.split('\n').map(url => url.trim()).filter(url => url).map(convertGoogleDriveUrl) : [],
     };
@@ -348,11 +365,11 @@ export default function AdminForm() {
             </div>
             <Separator />
             
-            {/* Greeting Page Settings */}
+            {/* Main Content Settings */}
             <div>
-              <h3 className="text-lg font-medium mb-4">Main Greeting Page</h3>
+              <h3 className="text-lg font-medium mb-4">Main Content Settings</h3>
               <div className="space-y-4">
-                <FormField
+                 <FormField
                   control={form.control}
                   name="date"
                   render={({ field }) => (
@@ -426,52 +443,6 @@ export default function AdminForm() {
                       </FormItem>
                     )}
                   />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Magic Word (Password)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="best friend" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        The password to unlock the surprise.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Greeting Title</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Happy Birthday, Sondos!" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="poem"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Greeting Poem</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="A year of moments..."
-                          className="min-h-[150px]"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
                  <FormField
                   control={form.control}
                   name="backgroundImage"
@@ -521,6 +492,105 @@ export default function AdminForm() {
                        <FormDescription>
                         The short message that appears on the cake.
                       </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+            <Separator />
+            
+            {/* Letters and Magic Words */}
+            <div>
+              <h3 className="text-lg font-medium mb-4">Magic Words & Letters</h3>
+              <div className="space-y-6">
+                {fields.map((field, index) => (
+                    <Card key={field.id} className="relative bg-muted/50 p-4">
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-start gap-4">
+                          <h4 className="font-medium pt-2">Letter #{index + 1}</h4>
+                          <div className="flex items-center gap-4">
+                            <FormField
+                              control={form.control}
+                              name={`letters.${index}.isActive`}
+                              render={({ field }) => (
+                                <FormItem className="flex items-center gap-2 space-y-0">
+                                  <FormLabel>Active</FormLabel>
+                                  <FormControl>
+                                    <Switch
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="icon"
+                              onClick={() => remove(index)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                               <span className="sr-only">Remove Letter</span>
+                            </Button>
+                          </div>
+                        </div>
+
+                        <FormField
+                          control={form.control}
+                          name={`letters.${index}.magicWord`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Magic Word</FormLabel>
+                              <FormControl><Input placeholder="e.g., Sunflower" {...field} /></FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`letters.${index}.title`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Letter Title</FormLabel>
+                              <FormControl><Input placeholder="A special message for you" {...field} /></FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`letters.${index}.content`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Letter Content / Poem</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  placeholder="Your heartfelt message..."
+                                  className="min-h-[120px]"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </Card>
+                ))}
+                 <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => append({ id: `letter-${Date.now()}`, magicWord: '', title: '', content: '', isActive: true })}
+                >
+                  Add Another Letter
+                </Button>
+                <FormField
+                  control={form.control}
+                  name="letters"
+                  render={() => (
+                    <FormItem>
                       <FormMessage />
                     </FormItem>
                   )}

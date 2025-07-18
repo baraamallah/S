@@ -5,13 +5,19 @@ import React, { useState, useEffect, useCallback, createContext, useContext, Rea
 import { doc, setDoc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
+export interface Letter {
+  id: string;
+  magicWord: string;
+  title: string;
+  content: string;
+  isActive: boolean;
+}
+
 export interface BirthdayConfig {
   date: string;
   timezone: string;
-  password: string;
+  letters: Letter[];
   adminPassword: string;
-  title: string;
-  poem: string;
   backgroundImage: string;
   photoGallery: string[];
   entryTitle: string;
@@ -40,10 +46,16 @@ const CONFIG_DOC_ID = 'birthdayConfig';
 const defaultConfig: BirthdayConfig = {
   date: "2025-08-17T00:00:00.000Z",
   timezone: "America/New_York",
-  password: "Best Friend",
+  letters: [
+    {
+      id: `letter-${Date.now()}`,
+      magicWord: "Best Friend",
+      title: "Happy Birthday, Sondos!",
+      content: `Of all the stars in the night sky,<br />yours is the one that shines most high.<br />Through every chapter, laugh, and tear,<br />you grow more wonderful each year.<br />May all your wishes, big and small,<br />come true today, have a ball!`,
+      isActive: true,
+    }
+  ],
   adminPassword: "admin123",
-  title: "Happy Birthday, Sondos!",
-  poem: `Of all the stars in the night sky,<br />yours is the one that shines most high.<br />Through every chapter, laugh, and tear,<br />you grow more wonderful each year.<br />May all your wishes, big and small,<br />come true today, have a ball!`,
   backgroundImage: "",
   photoGallery: [],
   entryTitle: "A Surprise for Sondos",
@@ -85,6 +97,9 @@ export function BirthdayConfigProvider({ children }: { children: ReactNode }) {
       if (docSnap.exists()) {
         const fetchedConfig = docSnap.data() as Partial<BirthdayConfig>;
         const mergedConfig = { ...defaultConfig, ...fetchedConfig };
+        if (!mergedConfig.letters || mergedConfig.letters.length === 0) {
+            mergedConfig.letters = defaultConfig.letters;
+        }
         setConfig(mergedConfig);
       } else {
         setDoc(configDocRef, defaultConfig).catch(error => {
@@ -105,12 +120,14 @@ export function BirthdayConfigProvider({ children }: { children: ReactNode }) {
   const saveConfig = useCallback(async (newConfig: Partial<BirthdayConfig>) => {
     try {
       const configDocRef = doc(db, CONFIG_COLLECTION, CONFIG_DOC_ID);
-      await setDoc(configDocRef, newConfig, { merge: true });
+      // When saving, we need to ensure we don't merge arrays, but replace them.
+      const currentConfig = { ...config, ...newConfig };
+      await setDoc(configDocRef, currentConfig);
     } catch (error) {
       console.error("Failed to save config to Firebase", error);
       throw error;
     }
-  }, []);
+  }, [config]);
 
   const value = { config, saveConfig, isLoaded };
 

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -7,10 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Gift, Sparkles } from "lucide-react";
 import { useBirthdayConfig } from "@/hooks/use-birthday-config";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { Letter } from "@/hooks/use-birthday-config";
 
 export default function Home() {
   const [isStarted, setIsStarted] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [unlockedLetter, setUnlockedLetter] = useState<Letter | null>(null);
   const { config, isLoaded } = useBirthdayConfig();
 
   const handleStart = () => {
@@ -29,8 +31,8 @@ export default function Home() {
     }
   };
 
-  const handleSuccess = () => {
-    setIsAuthenticated(true);
+  const handleSuccess = (letter: Letter) => {
+    setUnlockedLetter(letter);
   };
   
   if (!isLoaded) {
@@ -68,8 +70,8 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8 transition-opacity duration-1000">
-      {isAuthenticated ? (
-        <BirthdayGreeting />
+      {unlockedLetter ? (
+        <BirthdayGreeting letter={unlockedLetter} />
       ) : (
         <PasswordGate onSuccess={handleSuccess} />
       )}
