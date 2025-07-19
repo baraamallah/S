@@ -8,12 +8,12 @@ import CuteCat from "./cute-cat";
 import { Card, CardContent } from "./ui/card";
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { PartyPopper } from "lucide-react";
+import { PartyPopper, ArrowLeft } from "lucide-react";
 import Balloons from "./balloons";
 import PhotoCarousel from "./photo-carousel";
 import Fireworks from "./fireworks";
 
-export default function BirthdayGreeting({ letter }: { letter: Letter }) {
+export default function BirthdayGreeting({ letter, onGoBack }: { letter: Letter, onGoBack: () => void }) {
   const { config, isLoaded } = useBirthdayConfig();
   const [isCelebrating, setIsCelebrating] = useState(false);
 
@@ -52,6 +52,7 @@ export default function BirthdayGreeting({ letter }: { letter: Letter }) {
   const showBalloons = letter.showBalloons !== false;
   const showFireworks = letter.showFireworks !== false;
   const showCakeAndCats = letter.showCakeAndCats !== false;
+  const showBackButton = letter.showBackButton !== false;
 
   return (
     <div
@@ -62,6 +63,15 @@ export default function BirthdayGreeting({ letter }: { letter: Letter }) {
       {isCelebrating && showFireworks && <Fireworks isActive={isCelebrating} />}
       {config.backgroundImage && <div className="absolute inset-0 bg-black/20 z-0" />}
       
+      <header className="relative z-10 w-full flex justify-start p-2">
+         {showBackButton && (
+          <Button onClick={onGoBack} variant="outline" className="backdrop-blur-sm bg-background/50">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
+        )}
+      </header>
+
       <main className="relative z-10 flex flex-grow flex-col justify-center items-center gap-6">
         <Card className="w-full max-w-2xl text-center bg-card/80 backdrop-blur-sm shadow-2xl rounded-2xl animate-in fade-in zoom-in-95 duration-700">
           <CardContent className="p-6 md:p-10">

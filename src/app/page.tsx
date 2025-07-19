@@ -35,6 +35,10 @@ export default function Home() {
     setUnlockedLetter(letter);
   };
   
+  const handleGoBack = () => {
+    setUnlockedLetter(null);
+  }
+
   if (!isLoaded) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8 bg-background text-center">
@@ -71,7 +75,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8 transition-opacity duration-1000">
       {unlockedLetter ? (
-        <BirthdayGreeting letter={unlockedLetter} />
+        <BirthdayGreeting letter={unlockedLetter} onGoBack={handleGoBack} />
       ) : (
         <PasswordGate onSuccess={handleSuccess} />
       )}

@@ -52,6 +52,7 @@ const letterSchema = z.object({
     showBalloons: z.boolean(),
     showFireworks: z.boolean(),
     showCakeAndCats: z.boolean(),
+    showBackButton: z.boolean(),
 });
 
 const formSchema = z.object({
@@ -166,6 +167,7 @@ export default function AdminForm() {
         showBalloons: letter.showBalloons !== false, // default to true
         showFireworks: letter.showFireworks !== false, // default to true
         showCakeAndCats: letter.showCakeAndCats !== false, // default to true
+        showBackButton: letter.showBackButton !== false, // default to true
       }));
 
       form.reset({
@@ -631,6 +633,21 @@ export default function AdminForm() {
                                     </FormItem>
                                   )}
                                 />
+                                <FormField
+                                  control={form.control}
+                                  name={`letters.${index}.showBackButton`}
+                                  render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-background">
+                                      <FormLabel className="font-normal">Show Back Button</FormLabel>
+                                      <FormControl>
+                                        <Switch
+                                          checked={field.value}
+                                          onCheckedChange={field.onChange}
+                                        />
+                                      </FormControl>
+                                    </FormItem>
+                                  )}
+                                />
                             </div>
                         </div>
 
@@ -649,6 +666,7 @@ export default function AdminForm() {
                     showBalloons: true,
                     showFireworks: true,
                     showCakeAndCats: true,
+                    showBackButton: true,
                   })}
                 >
                   Add Another Letter

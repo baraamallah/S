@@ -14,6 +14,7 @@ export interface Letter {
   showBalloons?: boolean;
   showFireworks?: boolean;
   showCakeAndCats?: boolean;
+  showBackButton?: boolean;
 }
 
 export interface BirthdayConfig {
@@ -59,6 +60,7 @@ const defaultConfig: BirthdayConfig = {
       showBalloons: true,
       showFireworks: true,
       showCakeAndCats: true,
+      showBackButton: true,
     }
   ],
   adminPassword: "admin123",
